@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">CESATEC</string>
+    <string name="api_connecting">Buscando dados&#8230;</string>
+    <string name="api_failed_connecting">Falha ao acessar o servidor! Cheque a conexão</string>
+    <string name="detail_id">ID: %1$d</string>
+    <string name="detail_name">Nome: %1$s</string>
+    <string name="title_student_detail">Nome: %1$s</string>
+</resources>
