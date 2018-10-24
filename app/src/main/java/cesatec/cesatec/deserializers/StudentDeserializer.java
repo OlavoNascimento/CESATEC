@@ -8,10 +8,11 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
+import cesatec.cesatec.ApiConstants;
 import cesatec.cesatec.models.Student;
 
 /**
- * Convert the response JSON to a Student object
+ * Deserializer used to transform JSON string into a Student object
  */
 public class StudentDeserializer implements JsonDeserializer<Student> {
     private final static String TAG = "StudentDeserializer";
@@ -19,12 +20,25 @@ public class StudentDeserializer implements JsonDeserializer<Student> {
     @Override
     public Student deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context)
             throws JsonParseException {
-        final JsonObject jsonObj = json.getAsJsonObject();
-        final Short id = jsonObj.get("id").getAsShort();
-        final String firstName = jsonObj.get("first_name").getAsString();
-        final String lastName = jsonObj.get("last_name").getAsString();
-        final String fullName = firstName + " " + lastName;
-        final String avatarUrl = jsonObj.get("avatar").getAsString();
-        return new Student(id, fullName, avatarUrl);
+        final JsonObject jsonObject = json.getAsJsonObject();
+
+        // Get the student name
+        final String name = jsonObject.get(ApiConstants.STUDENTS_FIELD_NAME).getAsString();
+
+        // Get the student register number
+        final int ra = jsonObject.get(ApiConstants.STUDENTS_FIELD_ENROLL_ID).getAsInt();
+
+        // TODO Decode image
+        // Decode the student image into a bytes array
+        final JsonElement imageElement = jsonObject.get(ApiConstants.STUDENTS_FIELD_IMAGE);
+        byte[] image = null;
+        if (!imageElement.isJsonNull()) {
+            // Assigns the student image as a byte array if it's not null
+            final String encodedImage = imageElement.getAsString();
+            image = encodedImage.getBytes();
+        }
+
+        // Returns a new Student object based on the JSON data
+        return new Student(name, ra, image);
     }
 }

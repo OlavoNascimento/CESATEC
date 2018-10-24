@@ -5,11 +5,13 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 
 import cesatec.cesatec.R;
 import cesatec.cesatec.fragments.StudentListFragment;
 
+/**
+ * Displays a list containing all students
+ */
 public class StudentListActivity extends AppCompatActivity {
     private static final String TAG = "StudentListActivity";
 
@@ -18,19 +20,18 @@ public class StudentListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_student_list);
 
+        // Set the title of the toolbar
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
 
         FragmentManager fm = getSupportFragmentManager();
-        Fragment fetchFragment = fm.findFragmentByTag("fetch_fragment");
+        // Try to reuse the student list fragment
+        Fragment fetchFragment = fm.findFragmentByTag("student_list_fragment");
         if (fetchFragment == null) {
+            // Recreate the student list fragment if it doesn't already exist
             StudentListFragment newFetchFragment = new StudentListFragment();
-            Log.d(TAG, "onCreate: creating fragment");
-            fm.beginTransaction().add(newFetchFragment, "fetch_fragment").commit();
-        } else {
-            Log.d(TAG, "onCreate: reusing fragment");
+            fm.beginTransaction().add(newFetchFragment, "student_list_fragment").commit();
         }
     }
-
 }

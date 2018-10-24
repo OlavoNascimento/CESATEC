@@ -6,26 +6,24 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
 import cesatec.cesatec.R;
+import cesatec.cesatec.models.Enrollment;
 
+/**
+ * Fragment that contains all details of a Student
+ */
 public class StudentDetailFragment extends Fragment {
     static final String TAG = "StudentDetailFragment";
 
-    private int id;
-    private String name;
-    private String avatarUrl;
+    private Enrollment enrollment;
 
     /**
-     * Set the fragment variables used the arguments passed to the fragment
+     * Set the enrollment using the arguments passed to the fragment
      *
      * @param savedInstanceState Saved fragmented data to be reused
      */
@@ -35,49 +33,52 @@ public class StudentDetailFragment extends Fragment {
 
         Bundle arguments = getArguments();
         if (arguments != null) {
-            Log.d(TAG, "onCreate: Student detail " + arguments.toString());
-            this.id = getArguments().getShort("id");
-            this.name = getArguments().getString("name");
-            this.avatarUrl = getArguments().getString("avatar_url");
+            this.enrollment = arguments.getParcelable("enrollment");
         }
     }
 
     /**
-     * Set up widgets after the fragment views are created and available
+     * Set up the views when they are available
      */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        setWidgets();
+        setDetailViews();
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
 
     /**
-     * Set the information of the user on the UI
+     * Set the information of the enrollment on the UI
      */
-    private void setWidgets() {
-        Log.d(TAG, "setWidgets: setting Student information on detail activity");
-
+    private void setDetailViews() {
         Activity activity = getActivity();
         if (activity != null) {
-            CollapsingToolbarLayout appBarLayout = activity.findViewById(R.id.toolbar_layout);
-            appBarLayout.setTitle(name);
+            // Set the student name on the toolbar title
+            CollapsingToolbarLayout appBarLayout = activity.findViewById(R.id.detail_toolbar_layout);
+            appBarLayout.setTitle(enrollment.getStudent().getName());
 
-            TextView idView = activity.findViewById(R.id.student_id);
-            String idText = getString(R.string.student_detail_id, id);
+            // Set the student id
+            TextView idView = activity.findViewById(R.id.detail_student_ra);
+            String idText = getString(R.string.student_detail_ra, enrollment.getStudent().getRa());
             idView.setText(idText);
 
-            TextView nameView = activity.findViewById(R.id.student_name);
-            String nameText = getString(R.string.student_detail_name, name);
-            nameView.setText(nameText);
+            // TODO Load student image
+            /*if (image != null) {
+                ImageView avatarView = activity.findViewById(R.id.student_avatar);
+                avatarView.setImageBitmap(byteArrayToImage());
+            }*/
 
-            ImageView avatarView = activity.findViewById(R.id.student_avatar);
-            Picasso.get()
-                    .load(avatarUrl)
-                    .placeholder(R.mipmap.ic_launcher_round)
-                    .into(avatarView);
+            // Set the student group
+            TextView groupView = activity.findViewById(R.id.detail_student_group);
+            String groupText = getString(R.string.student_detail_group, enrollment.getGroup());
+            groupView.setText(groupText);
+
+            // Set the student course
+            TextView courseView = activity.findViewById(R.id.detail_student_course);
+            String courseText = getString(R.string.student_detail_course, enrollment.getCourse());
+            courseView.setText(courseText);
         }
     }
 }

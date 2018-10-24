@@ -7,13 +7,13 @@
     tools:context="cesatec.cesatec.activities.detailActivity.StudentDetailActivity">
 
     <android.support.design.widget.AppBarLayout
-        android:id="@+id/app_bar"
+        android:id="@+id/detail_app_bar"
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/toolbar_layout"
+            android:id="@+id/detail_toolbar_layout"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fitsSystemWindows="true"
@@ -22,7 +22,7 @@
             app:toolbarId="@+id/toolbar">
 
             <ImageView
-                android:id="@+id/student_avatar"
+                android:id="@+id/detail_student_avatar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:contentDescription="@string/student_detail_image_description"
@@ -42,7 +42,7 @@
 
 
     <android.support.v4.widget.NestedScrollView
-        android:id="@+id/student_detail_container"
+        android:id="@+id/detail_student_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
@@ -52,35 +52,52 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/student_id"
+                android:id="@+id/detail_student_ra"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="18dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
-                android:text="@string/student_detail_id"
-                android:textSize="24sp"
+                android:text="@string/student_detail_ra"
+                android:textSize="26sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
-                android:id="@+id/student_name"
-                android:layout_width="wrap_content"
+                android:id="@+id/detail_student_group"
+                android:layout_width="270dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginLeft="8dp"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="10dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginRight="8dp"
-                android:hint="@string/student_detail_name"
+                android:gravity="center"
+                android:text="@string/student_detail_group"
                 android:textSize="26sp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.501"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="@+id/student_id" />
+                app:layout_constraintTop_toBottomOf="@+id/detail_student_ra" />
+
+            <TextView
+                android:id="@+id/detail_student_course"
+                android:layout_width="270dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:gravity="center"
+                android:text="@string/student_detail_course"
+                android:textSize="26sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/detail_student_group" />
+
         </android.support.constraint.ConstraintLayout>
 
     </android.support.v4.widget.NestedScrollView>

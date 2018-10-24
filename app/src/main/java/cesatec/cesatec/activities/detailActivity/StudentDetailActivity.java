@@ -4,14 +4,13 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import cesatec.cesatec.R;
 import cesatec.cesatec.fragments.StudentDetailFragment;
 
 /**
- * Show details of a student
+ * Display details of a student
  */
 public class StudentDetailActivity extends AppCompatActivity {
     private static final String TAG = "StudentDetailActivity";
@@ -46,14 +45,10 @@ public class StudentDetailActivity extends AppCompatActivity {
      * @return Bundle containing the arguments to be sent to the detail fragment
      */
     private Bundle incomingIntentToBundle() {
-        if (getIntent().hasExtra("id") &&
-                getIntent().hasExtra("name") &&
-                getIntent().hasExtra("avatar_url")) {
+        if (getIntent().hasExtra("enrollment")) {
             Bundle arguments = new Bundle();
-            Log.d(TAG, "getIncomingIntent: found intent values");
-            arguments.putShort("id", getIntent().getShortExtra("id", (short) 0));
-            arguments.putString("name", getIntent().getStringExtra("name"));
-            arguments.putString("avatar_url", getIntent().getStringExtra("avatar_url"));
+            arguments.putParcelable("enrollment",
+                    getIntent().getParcelableExtra("enrollment"));
             return arguments;
         }
         return null;

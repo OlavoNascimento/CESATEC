@@ -10,29 +10,35 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
 
-import cesatec.cesatec.ApiConstants;
 import cesatec.cesatec.R;
-import cesatec.cesatec.adapters.StudentAdapter;
-import cesatec.cesatec.models.Student;
-import cesatec.cesatec.network.networkTasks.ApiFetchTask;
+import cesatec.cesatec.adapters.EnrollmentAdapter;
+import cesatec.cesatec.models.Enrollment;
+import cesatec.cesatec.network.ApiFetchEnrollmentsTask;
 
+/**
+ * Fragment that displays all Enrollments in a RecyclerView
+ */
 public class StudentListFragment extends android.support.v4.app.Fragment {
     private static final String TAG = "StudentListFragment";
-    boolean mTwoPane;
-    private ArrayList<Student> studentList;
+    boolean twoPane;
+    private ArrayList<Enrollment> enrollmentsList;
 
+    /**
+     * Save the Enrollment ArrayList on a bundle before the fragment is destroyed
+     *
+     * @param outState Bundle containing variables to be reused when the fragment is recreated
+     */
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
         // Save studentList to bundle, so it can be used when the fragment is recreated
-        if (studentList != null) {
-            outState.putParcelableArrayList("student_list", studentList);
+        if (enrollmentsList != null) {
+            outState.putParcelableArrayList("enrollments_list", enrollmentsList);
         }
     }
 
@@ -42,46 +48,53 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
 
         Activity activity = getActivity();
         if (activity != null) {
-            if (activity.findViewById(R.id.student_detail_container) != null) {
-                // The detail container view will be present only in the
-                // large-screen layouts (res/values-w900dp).
-                // If this view is present, then the
-                // activity should be in two-pane mode.
-                mTwoPane = true;
+            // TODO Implement two panels
+            if (activity.findViewById(R.id.course_list) != null) {
+                // The list of courses will be present only on
+                // large screen layouts (student_list.xml 900dp)
+                twoPane = true;
             }
 
             // TODO Add FAB batch action
-            FloatingActionButton fab = getActivity().findViewById(R.id.fab);
+            FloatingActionButton fab = activity.findViewById(R.id.fab);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                    Snackbar.make(view, "Placeholder", Snackbar.LENGTH_LONG)
                             .setAction("Action", null).show();
                 }
             });
+
+            if (savedInstanceState == null) {
+                // When the fragment is created by the first time fetch the JSON from the server
+                // and save it on studentList
+                new ApiFetchEnrollmentsTask(activity, this).execute();
+            } else {
+                // If the fragment is being recreated,
+                // use the data already retrieved to set up the recycler view
+                // Avoiding unnecessary requests to the API
+                enrollmentsList = savedInstanceState.getParcelableArrayList("enrollments_list");
+                setUpRecyclerView(activity, enrollmentsList);
+            }
         }
 
-        if (savedInstanceState == null) {
-            // When the fragment is created by the first time fetch the JSON from the server
-            // save it on studentList
-            Log.d(TAG, "onActivityCreated: Fetching data");
-            new ApiFetchTask(getActivity(), this).execute(ApiConstants.API_USERS);
-        } else {
-            // if it's being recreated, use the data already retrieved to set up the recycler view
-            Log.d(TAG, "onActivityCreated: Reusing data");
-            studentList = savedInstanceState.getParcelableArrayList("student_list");
-            setUpRecyclerView(getActivity(), studentList);
-        }
     }
 
-    public void setUpRecyclerView(Activity activity, ArrayList<Student> studentArrayList) {
-        if (studentList == null) {
+    /**
+     * Set an ArrayList of Students to a recycler view
+     *
+     * @param activity            Activity containing the recycler view
+     * @param enrollmentArrayList ArrayList of Students to bind to the recycler view
+     */
+    public void setUpRecyclerView(Activity activity, ArrayList<Enrollment> enrollmentArrayList) {
+        if (enrollmentsList == null) {
             // Save the retrieved array list for the first time
-            // so it can be used when the fragment is recreated
-            this.studentList = studentArrayList;
+            // so it can be reused when the fragment is recreated
+            this.enrollmentsList = enrollmentArrayList;
         }
         RecyclerView rvStudents = activity.findViewById(R.id.student_list);
-        StudentAdapter adapter = new StudentAdapter(activity, studentArrayList);
+        // Set the recycler view student adapter
+        EnrollmentAdapter adapter = new EnrollmentAdapter(activity, enrollmentArrayList);
         rvStudents.setAdapter(adapter);
         // Show the recycler view that will display the list
         rvStudents.setVisibility(View.VISIBLE);
@@ -91,6 +104,12 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
                         calculateNoOfColumns(activity)));
     }
 
+    /**
+     * Calculate the maximum number of columns available for a recycler view
+     *
+     * @param context Context of the recycler view
+     * @return Maximum number of columns
+     */
     private int calculateNoOfColumns(Context context) {
         DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
         float dpWidth = displayMetrics.widthPixels / displayMetrics.density;
