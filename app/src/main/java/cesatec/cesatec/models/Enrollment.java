@@ -35,6 +35,7 @@ public class Enrollment implements Parcelable {
     private final String course;
     private final Student student;
     private final Authorization[] authorizations;
+    private boolean isSelected;
 
     /**
      * Instantiate a Student object using parameters
@@ -52,6 +53,7 @@ public class Enrollment implements Parcelable {
         this.course = course;
         this.student = student;
         this.authorizations = authorizations;
+        this.isSelected = false;
     }
 
     /**
@@ -66,6 +68,7 @@ public class Enrollment implements Parcelable {
         this.course = in.readString();
         this.student = in.readParcelable(Student.class.getClassLoader());
         this.authorizations = in.createTypedArray(Authorization.CREATOR);
+        this.isSelected = in.readInt() == 1;
     }
 
     /**
@@ -80,6 +83,7 @@ public class Enrollment implements Parcelable {
         out.writeString(course);
         out.writeParcelable(student, 0);
         out.writeTypedArray(authorizations, 0);
+        out.writeInt(isSelected ? 1 : 0);
     }
 
     @Override
@@ -107,6 +111,14 @@ public class Enrollment implements Parcelable {
         return authorizations;
     }
 
+    public boolean isSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(boolean selected) {
+        isSelected = selected;
+    }
+
     @Override
     public String toString() {
         return "Enrollment{" +
@@ -115,6 +127,7 @@ public class Enrollment implements Parcelable {
                 ", course='" + course + '\'' +
                 ", student=" + student +
                 ", authorizations=" + Arrays.toString(authorizations) +
+                ", isSelected=" + isSelected +
                 '}';
     }
 }

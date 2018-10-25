@@ -2,8 +2,12 @@ package cesatec.cesatec.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +21,7 @@ import java.util.ArrayList;
 
 import cesatec.cesatec.R;
 import cesatec.cesatec.activities.detailActivity.StudentDetailActivity;
+import cesatec.cesatec.fragments.StudentListFragment;
 import cesatec.cesatec.models.Enrollment;
 import cesatec.cesatec.network.ApiCreateRegistryTask;
 
@@ -27,10 +32,14 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
     private static final String TAG = "EnrollmentAdapter";
 
     private WeakReference<Context> contextReference;
+    private WeakReference<StudentListFragment> fragmentReference;
     private ArrayList<Enrollment> enrollmentsList;
 
-    public EnrollmentAdapter(Context context, ArrayList<Enrollment> enrollmentsList) {
+    public EnrollmentAdapter(Context context,
+                             StudentListFragment fragment,
+                             ArrayList<Enrollment> enrollmentsList) {
         this.contextReference = new WeakReference<>(context);
+        this.fragmentReference = new WeakReference<>(fragment);
         this.enrollmentsList = enrollmentsList;
     }
 
@@ -74,6 +83,14 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
                 Picasso.get().load(avatarUrl).into(avatarView);
             }
 
+            // Check if the enrollment was already selected, avoiding
+            // changing colors of different enrollments
+            if (enrollment.isSelected()) {
+                setEnrollmentSelected(avatarView, context);
+            } else {
+                setEnrollmentUnselected(avatarView);
+            }
+
             // Create detail activity on click
             avatarView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -83,19 +100,27 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
                     context.startActivity(intent);
                 }
             });
-            // TODO Send multiple students
-            // Send data to server on long click
+
+            // Select enrollment and add it to a list sent to the API
             avatarView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
-                    ArrayList<Enrollment> studentsNotPresent = new ArrayList<>();
-                    // TODO Remove and add automatically on select
-                    studentsNotPresent.add(enrollment);
-                    for (Enrollment enrollment : studentsNotPresent) {
-                        ApiCreateRegistryTask apiSend = new ApiCreateRegistryTask(context, enrollment);
-                        apiSend.execute();
+                    StudentListFragment fragment = fragmentReference.get();
+                    if (fragment != null) {
+                        if (enrollment.isSelected()) {
+                            // Unselected the enrollment if it's already selected
+                            fragment.removeFromUpdateStatus(enrollment);
+                            enrollment.setSelected(false);
+                            setEnrollmentUnselected(view);
+                        } else {
+                            // Mark the enrollment as selected
+                            fragment.addToUpdateStatus(enrollment);
+                            enrollment.setSelected(true);
+                            setEnrollmentSelected(view, context);
+                        }
+                        return true;
                     }
-                    return true;
+                    return false;
                 }
             });
         }
@@ -114,6 +139,23 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
             return 0;
         }
         return enrollmentsList.size();
+    }
+
+    /**
+     * Change the color of a Enrollment avatarView, symbolizing the enrollment has been selected
+     * @param avatarView Avatar view to change background
+     * @param context Context of the avatar view
+     */
+    private void setEnrollmentSelected(View avatarView, Context context) {
+        avatarView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+    }
+
+    /**
+     * Reset the color of a enrollment background
+     * @param avatarView Avatar view to reset background color
+     */
+    private void setEnrollmentUnselected(View avatarView) {
+        avatarView.setBackgroundColor(Color.TRANSPARENT);
     }
 
     /**

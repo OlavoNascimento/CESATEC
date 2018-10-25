@@ -13,6 +13,7 @@ import android.util.DisplayMetrics;
 import android.view.View;
 
 import java.util.ArrayList;
+import java.util.ListIterator;
 
 import cesatec.cesatec.R;
 import cesatec.cesatec.adapters.EnrollmentAdapter;
@@ -27,6 +28,7 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
 
     private boolean twoPane;
     private ArrayList<Enrollment> enrollmentsList;
+    private ArrayList<Enrollment> enrollmentsUpdateStatus = new ArrayList<>();
 
     /**
      * Save the Enrollment ArrayList on a bundle before the fragment is destroyed
@@ -37,7 +39,7 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        // Save studentList to a bundle, so it can be reused when the fragment is recreated
+        // Save studentList to bundle, so it can be used when the fragment is recreated
         if (enrollmentsList != null) {
             outState.putParcelableArrayList("enrollments_list", enrollmentsList);
         }
@@ -56,13 +58,11 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
                 twoPane = true;
             }
 
-            // TODO Add FAB batch action
             FloatingActionButton fab = activity.findViewById(R.id.fab);
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Snackbar.make(view, "Placeholder", Snackbar.LENGTH_LONG)
-                            .setAction("Action", null).show();
+                    sendEnrollmentsStatus(view);
                 }
             });
 
@@ -95,7 +95,8 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
         }
         RecyclerView rvStudents = activity.findViewById(R.id.student_list);
         // Set the recycler view student adapter
-        EnrollmentAdapter adapter = new EnrollmentAdapter(activity, enrollmentArrayList);
+        EnrollmentAdapter adapter = new EnrollmentAdapter(activity,
+                this, enrollmentArrayList);
         rvStudents.setAdapter(adapter);
         // Show the recycler view that will display the list
         rvStudents.setVisibility(View.VISIBLE);
@@ -117,4 +118,44 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
         return (int) (dpWidth / 180);
     }
 
+    private void sendEnrollmentsStatus(View view) {
+        Activity activity = getActivity();
+        if (activity != null) {
+            // Message to be displayed  on the snack bar
+            String message;
+            if (! enrollmentsUpdateStatus.isEmpty()) {
+                // Display the number of enrollments sent
+                message = getString(R.string.student_enrollments_sent,
+                        enrollmentsUpdateStatus.size());
+
+                // Creates a iterator so a item can be removed while iterating through the list
+                ListIterator<Enrollment> iterator = enrollmentsUpdateStatus.listIterator();
+
+                // Iterate through the enrollments setting them to false and removing them from
+                // the enrollments to be updated list
+                while(iterator.hasNext()) {
+                    Enrollment enrollment = iterator.next();
+                    // Set the enrollment as unselected
+                    enrollment.setSelected(false);
+                    // Remove the enrollment from the list
+                    iterator.remove();
+                }
+
+                // Update the recycler view
+                setUpRecyclerView(activity, enrollmentsList);
+            } else {
+                // No enrollment was selected
+                message = getString(R.string.student_no_enrollments_sent);
+            }
+            Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
+        }
+    }
+
+    public void addToUpdateStatus(Enrollment enrollment) {
+        enrollmentsUpdateStatus.add(enrollment);
+    }
+
+    public void removeFromUpdateStatus(Enrollment enrollment) {
+        enrollmentsUpdateStatus.remove(enrollment);
+    }
 }

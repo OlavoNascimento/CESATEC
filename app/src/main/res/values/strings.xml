@@ -2,8 +2,12 @@
     <string name="app_name">CESATEC</string>
     <string name="api_connecting">Buscando dados&#8230;</string>
     <string name="api_failed_connecting">Falha ao acessar o servidor! Cheque a conexão</string>
+
     <string name="student_detail_image_description">Imagem do aluno</string>
     <string name="student_detail_ra">RM: %1$d</string>
     <string name="student_detail_group">Grupo: %1$s</string>
     <string name="student_detail_course">Curso: %1$s</string>
+
+    <string name="student_enrollments_sent">Status de %1$d alunos atualizados</string>
+    <string name="student_no_enrollments_sent">Nenhum status de aluno atualizado</string>
 </resources>
