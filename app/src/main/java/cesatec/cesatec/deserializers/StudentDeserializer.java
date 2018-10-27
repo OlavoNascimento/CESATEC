@@ -28,17 +28,17 @@ public class StudentDeserializer implements JsonDeserializer<Student> {
         // Get the student register number
         final int ra = jsonObject.get(ApiConstants.STUDENTS_FIELD_ENROLL_ID).getAsInt();
 
-        // TODO Decode image
-        // Decode the student image into a bytes array
+        // Get the student avatar url
         final JsonElement imageElement = jsonObject.get(ApiConstants.STUDENTS_FIELD_IMAGE);
-        byte[] image = null;
-        if (!imageElement.isJsonNull()) {
+        String imageUrl;
+        if (imageElement.isJsonNull()) {
+            imageUrl = null;
+        } else {
             // Assigns the student image as a byte array if it's not null
-            final String encodedImage = imageElement.getAsString();
-            image = encodedImage.getBytes();
+            imageUrl = imageElement.getAsString();
         }
 
         // Returns a new Student object based on the JSON data
-        return new Student(name, ra, image);
+        return new Student(name, ra, imageUrl);
     }
 }

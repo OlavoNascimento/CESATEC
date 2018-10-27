@@ -3,10 +3,8 @@ package cesatec.cesatec.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.sql.Date;
-import java.sql.Time;
-
 public class Authorization implements Parcelable {
+    public static final String TAG = "Authorization";
 
     public static final Creator<Authorization> CREATOR = new Creator<Authorization>() {
         /**
@@ -30,36 +28,36 @@ public class Authorization implements Parcelable {
         }
     };
 
-    private Date authorization_start;
-    private Date authorization_end;
-    private Time time_start;
-    private Time time_end;
+    private String authorizationStart;
+    private String authorizationEnd;
+    private String timeStart;
+    private String timeEnd;
     private String weekday;
-    private String authorization_type;
+    private String responsible;
 
-    public Authorization(Date authorization_start, Date authorization_end, Time time_start,
-                         Time time_end, String weekday, String authorization_type) {
-        this.authorization_start = authorization_start;
-        this.authorization_end = authorization_end;
-        this.time_start = time_start;
-        this.time_end = time_end;
+    public Authorization(String authorizationStart, String authorizationEnd, String timeStart,
+                         String timeEnd, String weekday, String responsible) {
+        this.authorizationStart = authorizationStart;
+        this.authorizationEnd = authorizationEnd;
+        this.timeStart = timeStart;
+        this.timeEnd = timeEnd;
         this.weekday = weekday;
-        this.authorization_type = authorization_type;
+        this.responsible = responsible;
     }
 
     /**
      * Instantiate a Authorization object from a parcelable
      * Used to move the class between activities
      *
-     * @param in Parcelable to be used on the creation the Authorization
+     * @param in Parcelable to be used to create the Authorization
      */
     private Authorization(Parcel in) {
-        this.authorization_start = Date.valueOf(in.readString());
-        this.authorization_end = Date.valueOf(in.readString());
-        this.time_start = Time.valueOf(in.readString());
-        this.time_end = Time.valueOf(in.readString());
+        this.authorizationStart = in.readString();
+        this.authorizationEnd = in.readString();
+        this.timeStart = in.readString();
+        this.timeEnd = in.readString();
         this.weekday = in.readString();
-        this.authorization_type = in.readString();
+        this.responsible = in.readString();
     }
 
     /**
@@ -69,12 +67,12 @@ public class Authorization implements Parcelable {
      */
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(String.valueOf(authorization_start));
-        out.writeString(String.valueOf(authorization_end));
-        out.writeString(String.valueOf(time_start));
-        out.writeString(String.valueOf(time_end));
+        out.writeString(authorizationStart);
+        out.writeString(authorizationEnd);
+        out.writeString(timeStart);
+        out.writeString(timeEnd);
         out.writeString(weekday);
-        out.writeString(authorization_type);
+        out.writeString(responsible);
     }
 
     @Override
@@ -82,27 +80,39 @@ public class Authorization implements Parcelable {
         return 0;
     }
 
-    public Date getAuthorization_start() {
-        return authorization_start;
+    public String getAuthorizationStart() {
+        return authorizationStart;
     }
 
-    public Date getAuthorization_end() {
-        return authorization_end;
+    public String getAuthorizationEnd() {
+        return authorizationEnd;
     }
 
-    public Time getTime_start() {
-        return time_start;
+    public String getTimeStart() {
+        return timeStart;
     }
 
-    public Time getTime_end() {
-        return time_end;
+    public String getTimeEnd() {
+        return timeEnd;
     }
 
-    public String getweekday() {
+    public String getWeekday() {
         return weekday;
     }
 
-    public String getAuthorization_type() {
-        return authorization_type;
+    public String getResponsible() {
+        return responsible;
+    }
+
+    @Override
+    public String toString() {
+        return "Authorization{" +
+                "authorizationStart='" + authorizationStart + '\'' +
+                ", authorizationEnd='" + authorizationEnd + '\'' +
+                ", timeStart='" + timeStart + '\'' +
+                ", timeEnd='" + timeEnd + '\'' +
+                ", weekday='" + weekday + '\'' +
+                ", responsible='" + responsible + '\'' +
+                '}';
     }
 }

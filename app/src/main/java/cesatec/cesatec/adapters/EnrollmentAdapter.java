@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.squareup.picasso.Picasso;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
@@ -47,7 +49,7 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
     }
 
     /**
-     * Set the view holder and listeners for each user in the list
+     * Set the view holder and listeners for each student in the list
      *
      * @param viewHolder ViewHolder that specifies the views on each view holder
      * @param position   Enrollment to select from the list
@@ -58,11 +60,19 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
         if (context != null) {
             final Enrollment enrollment = enrollmentsList.get(position);
 
+            // Set student name on list
             TextView textView = viewHolder.nameTextView;
             textView.setText(enrollment.getStudent().getName());
+
+            // Set student image on list
+            // TODO Use placeholder as fallback
+            // TODO Use placeholder when loading
+            // TODO Image border color based on authorization status
             ImageView avatarView = viewHolder.avatarImageView;
-            // TODO Decode image and load it using a placeholder as fallback
-            // TODO Image color based on authorization status
+            String avatarUrl = enrollment.getStudent().getAvatarUrl();
+            if (avatarUrl != null) {
+                Picasso.get().load(avatarUrl).into(avatarView);
+            }
 
             // Create detail activity on click
             avatarView.setOnClickListener(new View.OnClickListener() {

@@ -9,7 +9,10 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import cesatec.cesatec.R;
 import cesatec.cesatec.models.Enrollment;
@@ -64,11 +67,13 @@ public class StudentDetailFragment extends Fragment {
             String idText = getString(R.string.student_detail_ra, enrollment.getStudent().getRa());
             idView.setText(idText);
 
-            // TODO Load student image
-            /*if (image != null) {
-                ImageView avatarView = activity.findViewById(R.id.student_avatar);
-                avatarView.setImageBitmap(byteArrayToImage());
-            }*/
+            // TODO Add placeholder
+            // Set the student image
+            String avatarUrl = enrollment.getStudent().getAvatarUrl();
+            if (avatarUrl != null) {
+                ImageView avatarView = activity.findViewById(R.id.detail_student_avatar);
+                Picasso.get().load(avatarUrl).into(avatarView);
+            }
 
             // Set the student group
             TextView groupView = activity.findViewById(R.id.detail_student_group);

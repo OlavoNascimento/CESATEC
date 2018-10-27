@@ -35,6 +35,7 @@ import cesatec.cesatec.models.Enrollment;
 public class ApiFetchEnrollmentsTask extends
         AsyncTask<Void, ArrayList<Enrollment>, ArrayList<Enrollment>> {
     private static final String TAG = "ApiFetchEnrollmentsTask";
+
     private WeakReference<Activity> activityReference;
     private WeakReference<StudentListFragment> fragmentReference;
     private URL api_url;

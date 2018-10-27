@@ -25,7 +25,6 @@ import cesatec.cesatec.models.Enrollment;
  * Add an registration of a student
  */
 public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
-
     private static final String TAG = "ApiCreateRegistryTask";
 
     private WeakReference<Context> contextWeakReference;
@@ -84,9 +83,9 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
         try {
             // Transform a Enrollment object to a string used to create a new registry
             String dataString = enrollmentToParameters(enrollment);
+
             // Size of the new registry data
             int postDataLength = dataString.getBytes("UTF-8").length;
-            Log.d(TAG, "createStudentRegistry: postDataLength" + postDataLength);
 
             HttpsURLConnection conn = (HttpsURLConnection) api_url.openConnection();
             conn.setRequestMethod("POST");
@@ -94,7 +93,7 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
             conn.setRequestProperty("charset", "UTF-8");
             conn.setRequestProperty("Content-Length", Integer.toString(postDataLength));
 
-            // Write the data to the connection output stream
+            // Write the enrollment information to the API
             OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream(),
                     "UTF-8");
             try {
@@ -108,7 +107,7 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
             if (conn.getResponseCode() == HttpURLConnection.HTTP_CREATED) {
                 return true;
             } else {
-                Log.d(TAG, "Failed creating new registry '" + dataString + "' on "
+                Log.e(TAG, "Failed creating new registry using '" + dataString + "' on "
                         + api_url + ", response code:" + conn.getResponseCode());
                 return false;
             }

@@ -3,7 +3,11 @@ package cesatec.cesatec.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
+
 public class Enrollment implements Parcelable {
+    private static final String TAG = "Enrollment";
+
     public static final Creator<Enrollment> CREATOR = new Creator<Enrollment>() {
         /**
          * Instantiate a Enrollment from a parcelable
@@ -25,12 +29,12 @@ public class Enrollment implements Parcelable {
             return new Enrollment[size];
         }
     };
-    private static final String TAG = "Enrollment";
-    private int id;
-    private String group;
-    private String course;
-    private Student student;
-    private Authorization[] authorizations;
+
+    private final int id;
+    private final String group;
+    private final String course;
+    private final Student student;
+    private final Authorization[] authorizations;
 
     /**
      * Instantiate a Student object using parameters
@@ -101,5 +105,16 @@ public class Enrollment implements Parcelable {
 
     public Authorization[] getAuthorizations() {
         return authorizations;
+    }
+
+    @Override
+    public String toString() {
+        return "Enrollment{" +
+                "id=" + id +
+                ", group='" + group + '\'' +
+                ", course='" + course + '\'' +
+                ", student=" + student +
+                ", authorizations=" + Arrays.toString(authorizations) +
+                '}';
     }
 }

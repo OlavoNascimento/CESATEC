@@ -24,7 +24,8 @@ import cesatec.cesatec.network.ApiFetchEnrollmentsTask;
  */
 public class StudentListFragment extends android.support.v4.app.Fragment {
     private static final String TAG = "StudentListFragment";
-    boolean twoPane;
+
+    private boolean twoPane;
     private ArrayList<Enrollment> enrollmentsList;
 
     /**
@@ -36,7 +37,7 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        // Save studentList to bundle, so it can be used when the fragment is recreated
+        // Save studentList to a bundle, so it can be reused when the fragment is recreated
         if (enrollmentsList != null) {
             outState.putParcelableArrayList("enrollments_list", enrollmentsList);
         }

@@ -35,21 +35,21 @@ public class Student implements Parcelable {
         }
     };
 
-    private String name;
-    private int ra;
-    private byte[] image;
+    private final String name;
+    private final int ra;
+    private final String avatarUrl;
 
     /**
      * Instantiate a Student object using parameters
      *
      * @param name Name of the student
      * @param ra Student enrollment id
-     * @param image Byte array of the student image
+     * @param imageUrl Byte array of the student image
      */
-    public Student(String name, int ra, byte[] image) {
+    public Student(String name, int ra, String imageUrl) {
         this.name = name;
         this.ra = ra;
-        this.image = image;
+        this.avatarUrl = imageUrl;
     }
 
     /**
@@ -61,11 +61,7 @@ public class Student implements Parcelable {
     private Student(Parcel in) {
         this.name = in.readString();
         this.ra = in.readInt();
-
-        // Recreates the user image represent by a byte array
-        int imageLength = in.readInt();
-        this.image = new byte[imageLength];
-        in.readByteArray(image);
+        this.avatarUrl = in.readString();
     }
 
     /**
@@ -77,13 +73,7 @@ public class Student implements Parcelable {
     public void writeToParcel(Parcel out, int i) {
         out.writeString(name);
         out.writeInt(ra);
-
-        if (image != null) {
-            // Write the student image length
-            out.writeInt(image.length);
-            // Write the student image represented using a byte array
-            out.writeByteArray(image);
-        }
+        out.writeString(avatarUrl);
     }
 
     @Override
@@ -99,7 +89,16 @@ public class Student implements Parcelable {
         return ra;
     }
 
-    public byte[] getImage() {
-        return image;
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    @Override
+    public String toString() {
+        return "Student{" +
+                "name='" + name + '\'' +
+                ", ra=" + ra +
+                ", imageUrl='" + avatarUrl + '\'' +
+                '}';
     }
 }

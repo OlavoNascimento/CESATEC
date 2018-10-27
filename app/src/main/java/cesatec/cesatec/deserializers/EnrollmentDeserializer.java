@@ -34,14 +34,14 @@ public class EnrollmentDeserializer implements JsonDeserializer<Enrollment> {
                 getAsJsonObject().get(ApiConstants.COURSE_FIELD_NAME).getAsString();
 
         // Get the enrollment group, which can be null
-        final JsonElement groupObject = jsonObject.get(ApiConstants.ENROLLMENTS_FIELD_STUDENT_GROUP);
+        final JsonElement groupElement = jsonObject.get(ApiConstants.ENROLLMENTS_FIELD_STUDENT_GROUP);
         String group;
-        if (groupObject.isJsonNull()) {
+        if (groupElement.isJsonNull()) {
             // Use group default value if it's null
             group = ApiConstants.ENROLLMENTS_DEFAULT_STUDENT_GROUP;
         } else {
             // Use the JSON value if it's not null
-            group = groupObject.getAsString();
+            group = groupElement.getAsString();
         }
 
         // Deserialize the student information associated with this enrollment
