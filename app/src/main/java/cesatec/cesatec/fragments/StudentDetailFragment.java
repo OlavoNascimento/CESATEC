@@ -77,13 +77,15 @@ public class StudentDetailFragment extends Fragment {
 
             // Set the student group
             TextView groupView = activity.findViewById(R.id.detail_student_group);
-            String groupText = getString(R.string.student_detail_group, enrollment.getGroup());
+            String groupText = getString(R.string.student_detail_group,
+                    enrollment.getGroup());
             groupView.setText(groupText);
 
             // Set the student course
-            TextView courseView = activity.findViewById(R.id.detail_student_course);
-            String courseText = getString(R.string.student_detail_course, enrollment.getCourse());
-            courseView.setText(courseText);
+            TextView subCourseView = activity.findViewById(R.id.detail_student_sub_course);
+            String subCourseText = getString(R.string.student_detail_course,
+                    enrollment.getSubCourse().getName());
+            subCourseView.setText(subCourseText);
         }
     }
 }

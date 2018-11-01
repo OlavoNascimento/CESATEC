@@ -11,7 +11,7 @@ public class Enrollment implements Parcelable {
     public static final Creator<Enrollment> CREATOR = new Creator<Enrollment>() {
         /**
          * Instantiate a Enrollment from a parcelable
-         * @param in Parcelable to be converted to Enrollment
+         * @param in Parcelable used to create a Enrollment
          * @return Enrollment object
          */
         @Override
@@ -32,9 +32,10 @@ public class Enrollment implements Parcelable {
 
     private final int id;
     private final String group;
-    private final String course;
+    private final SubCourse subCourse;
     private final Student student;
     private final Authorization[] authorizations;
+
     private boolean isSelected;
 
     /**
@@ -42,15 +43,15 @@ public class Enrollment implements Parcelable {
      *
      * @param id             Id of the enrollment
      * @param group          Group to which the enrollment belongs
-     * @param course         Course of the student
+     * @param subCourse      Sub course of the student
      * @param student        Student associated with the enrollment
      * @param authorizations All authorizations related to the enrollment
      */
-    public Enrollment(int id, String group, String course, Student student,
+    public Enrollment(int id, String group, SubCourse subCourse, Student student,
                       Authorization[] authorizations) {
         this.id = id;
         this.group = group;
-        this.course = course;
+        this.subCourse = subCourse;
         this.student = student;
         this.authorizations = authorizations;
         this.isSelected = false;
@@ -60,12 +61,13 @@ public class Enrollment implements Parcelable {
      * Instantiate a Enrollment object from a parcelable
      * Used to move the class between activities
      *
-     * @param in Parcelable to be used on the creation the Enrollment
+     * @param in Parcelable that contains the Enrollment
+     *           object information
      */
     private Enrollment(Parcel in) {
         this.id = in.readInt();
         this.group = in.readString();
-        this.course = in.readString();
+        this.subCourse = in.readParcelable(SubCourse.class.getClassLoader());
         this.student = in.readParcelable(Student.class.getClassLoader());
         this.authorizations = in.createTypedArray(Authorization.CREATOR);
         this.isSelected = in.readInt() == 1;
@@ -80,7 +82,7 @@ public class Enrollment implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(id);
         out.writeString(group);
-        out.writeString(course);
+        out.writeParcelable(subCourse, 0);
         out.writeParcelable(student, 0);
         out.writeTypedArray(authorizations, 0);
         out.writeInt(isSelected ? 1 : 0);
@@ -99,8 +101,8 @@ public class Enrollment implements Parcelable {
         return group;
     }
 
-    public String getCourse() {
-        return course;
+    public SubCourse getSubCourse() {
+        return subCourse;
     }
 
     public Student getStudent() {
@@ -124,7 +126,7 @@ public class Enrollment implements Parcelable {
         return "Enrollment{" +
                 "id=" + id +
                 ", group='" + group + '\'' +
-                ", course='" + course + '\'' +
+                ", course='" + subCourse.toString() + '\'' +
                 ", student=" + student +
                 ", authorizations=" + Arrays.toString(authorizations) +
                 ", isSelected=" + isSelected +

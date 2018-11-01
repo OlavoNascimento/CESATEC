@@ -83,7 +83,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/detail_student_ra" />
 
             <TextView
-                android:id="@+id/detail_student_course"
+                android:id="@+id/detail_student_sub_course"
                 android:layout_width="270dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"

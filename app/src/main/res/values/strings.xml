@@ -1,6 +1,11 @@
 <resources>
     <string name="app_name">CESATEC</string>
-    <string name="api_connecting">Buscando dados&#8230;</string>
+
+    <string name="global_course">Todos os alunos</string>
+
+    <string name="api_fetching_enrollments">Buscando dados de alunos&#8230;</string>
+    <string name="api_fetching_courses">Buscando dados de cursos&#8230;</string>
+
     <string name="api_failed_connecting">Falha ao acessar o servidor! Cheque a conexão</string>
 
     <string name="student_detail_image_description">Imagem do aluno</string>

@@ -1,13 +1,11 @@
 package cesatec.cesatec.adapters;
 
-import android.content.Context;
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
-import android.graphics.drawable.GradientDrawable;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,38 +21,39 @@ import cesatec.cesatec.R;
 import cesatec.cesatec.activities.detailActivity.StudentDetailActivity;
 import cesatec.cesatec.fragments.StudentListFragment;
 import cesatec.cesatec.models.Enrollment;
-import cesatec.cesatec.network.ApiCreateRegistryTask;
 
 /**
  * Adapter used to bind an ArrayList of Enrollments to a RecyclerView
  */
-public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.ViewHolder> {
+public class EnrollmentAdapter extends
+        RecyclerView.Adapter<EnrollmentAdapter.EnrollmentViewHolder> {
     private static final String TAG = "EnrollmentAdapter";
 
-    private WeakReference<Context> contextReference;
+    private WeakReference<Activity> activityReference;
     private WeakReference<StudentListFragment> fragmentReference;
     private ArrayList<Enrollment> enrollmentsList;
 
-    public EnrollmentAdapter(Context context,
+    public EnrollmentAdapter(Activity activity,
                              StudentListFragment fragment,
                              ArrayList<Enrollment> enrollmentsList) {
-        this.contextReference = new WeakReference<>(context);
+        this.activityReference = new WeakReference<>(activity);
         this.fragmentReference = new WeakReference<>(fragment);
         this.enrollmentsList = enrollmentsList;
     }
 
     /**
-     * Create a new adapter view holder, containing an enrollment
+     * Create a new view holder that contains an enrollment
      */
     @NonNull
     @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        Context context = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(context);
+    public EnrollmentViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int position) {
+        Activity activity = activityReference.get();
+        LayoutInflater inflater = LayoutInflater.from(activity);
         // Inflate custom row layout
-        View detailRow = inflater.inflate(R.layout.student_list_content, parent, false);
+        View studentRow = inflater.inflate(R.layout.student_list_content,
+                parent, false);
         // Return new holder instance
-        return new ViewHolder(detailRow);
+        return new EnrollmentViewHolder(studentRow);
     }
 
     /**
@@ -64,45 +63,49 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
      * @param position   Enrollment to select from the list
      */
     @Override
-    public void onBindViewHolder(@NonNull EnrollmentAdapter.ViewHolder viewHolder, int position) {
-        final Context context = contextReference.get();
-        if (context != null) {
+    public void onBindViewHolder(@NonNull EnrollmentViewHolder viewHolder, int position) {
+        final Activity activity = activityReference.get();
+        if (activity != null) {
             final Enrollment enrollment = enrollmentsList.get(position);
 
             // Set student name on list
-            TextView textView = viewHolder.nameTextView;
-            textView.setText(enrollment.getStudent().getName());
+            TextView studentNameView = viewHolder.studentNameView;
+            // Replace each space in the student name with a line break
+            String studentNameSurname = enrollment.getStudent().getName().replace(
+                    " ", "\n");
+            studentNameView.setText(studentNameSurname);
 
             // Set student image on list
             // TODO Use placeholder as fallback
             // TODO Use placeholder when loading
             // TODO Image border color based on authorization status
-            ImageView avatarView = viewHolder.avatarImageView;
+            ImageView studentAvatarView = viewHolder.studentAvatarView;
+            // Get the student avatar url
             String avatarUrl = enrollment.getStudent().getAvatarUrl();
             if (avatarUrl != null) {
-                Picasso.get().load(avatarUrl).into(avatarView);
+                Picasso.get().load(avatarUrl).into(studentAvatarView);
             }
 
             // Check if the enrollment was already selected, avoiding
             // changing colors of different enrollments
             if (enrollment.isSelected()) {
-                setEnrollmentSelected(avatarView, context);
+                setEnrollmentSelected(studentAvatarView, activity);
             } else {
-                setEnrollmentUnselected(avatarView);
+                setEnrollmentUnselected(studentAvatarView);
             }
 
             // Create detail activity on click
-            avatarView.setOnClickListener(new View.OnClickListener() {
+            studentAvatarView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Intent intent = new Intent(context, StudentDetailActivity.class);
+                    Intent intent = new Intent(activity, StudentDetailActivity.class);
                     intent.putExtra("enrollment", enrollment);
-                    context.startActivity(intent);
+                    activity.startActivity(intent);
                 }
             });
 
             // Select enrollment and add it to a list sent to the API
-            avatarView.setOnLongClickListener(new View.OnLongClickListener() {
+            studentAvatarView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View view) {
                     StudentListFragment fragment = fragmentReference.get();
@@ -116,7 +119,7 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
                             // Mark the enrollment as selected
                             fragment.addToUpdateStatus(enrollment);
                             enrollment.setSelected(true);
-                            setEnrollmentSelected(view, context);
+                            setEnrollmentSelected(view, activity);
                         }
                         return true;
                     }
@@ -124,7 +127,6 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
                 }
             });
         }
-
     }
 
     /**
@@ -143,15 +145,17 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
 
     /**
      * Change the color of a Enrollment avatarView, symbolizing the enrollment has been selected
+     *
      * @param avatarView Avatar view to change background
-     * @param context Context of the avatar view
+     * @param activity   Activity of the avatar view
      */
-    private void setEnrollmentSelected(View avatarView, Context context) {
-        avatarView.setBackgroundColor(ContextCompat.getColor(context, R.color.colorPrimaryDark));
+    private void setEnrollmentSelected(View avatarView, Activity activity) {
+        avatarView.setBackgroundColor(ContextCompat.getColor(activity, R.color.colorPrimaryDark));
     }
 
     /**
      * Reset the color of a enrollment background
+     *
      * @param avatarView Avatar view to reset background color
      */
     private void setEnrollmentUnselected(View avatarView) {
@@ -161,14 +165,14 @@ public class EnrollmentAdapter extends RecyclerView.Adapter<EnrollmentAdapter.Vi
     /**
      * Represents each enrollment on the list, displaying the student name and image
      */
-    class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView nameTextView;
-        private ImageView avatarImageView;
+    class EnrollmentViewHolder extends RecyclerView.ViewHolder {
+        private TextView studentNameView;
+        private ImageView studentAvatarView;
 
-        private ViewHolder(View itemView) {
+        private EnrollmentViewHolder(View itemView) {
             super(itemView);
-            this.nameTextView = itemView.findViewById(R.id.name);
-            this.avatarImageView = itemView.findViewById(R.id.avatar);
+            this.studentNameView = itemView.findViewById(R.id.student_list_name);
+            this.studentAvatarView = itemView.findViewById(R.id.student_list_avatar);
         }
     }
 }

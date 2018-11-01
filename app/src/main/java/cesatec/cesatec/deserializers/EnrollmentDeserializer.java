@@ -14,6 +14,7 @@ import cesatec.cesatec.ApiConstants;
 import cesatec.cesatec.models.Authorization;
 import cesatec.cesatec.models.Enrollment;
 import cesatec.cesatec.models.Student;
+import cesatec.cesatec.models.SubCourse;
 
 /**
  * Deserializer used to transform JSON string into a Enrollment object
@@ -27,35 +28,37 @@ public class EnrollmentDeserializer implements JsonDeserializer<Enrollment> {
         final JsonObject jsonObject = json.getAsJsonObject();
 
         // Id of the enrollment
-        final int id = jsonObject.get(ApiConstants.ENROLLMENTS_FIELD_ID).getAsInt();
-
-        // Get the course associated with this enrollment
-        final String course = jsonObject.get(ApiConstants.ENROLLMENTS_NESTED_COURSE_SUB_GROUP).
-                getAsJsonObject().get(ApiConstants.COURSE_FIELD_NAME).getAsString();
+        final int id = jsonObject.get(ApiConstants.EnrollmentResource.FIELD_ID).getAsInt();
 
         // Get the enrollment group, which can be null
-        final JsonElement groupElement = jsonObject.get(ApiConstants.ENROLLMENTS_FIELD_STUDENT_GROUP);
+        final JsonElement groupElement = jsonObject.get(
+                ApiConstants.EnrollmentResource.FIELD_STUDENT_GROUP);
         String group;
         if (groupElement.isJsonNull()) {
             // Use group default value if it's null
-            group = ApiConstants.ENROLLMENTS_DEFAULT_STUDENT_GROUP;
+            group = ApiConstants.EnrollmentResource.DEFAULT_STUDENT_GROUP;
         } else {
             // Use the JSON value if it's not null
             group = groupElement.getAsString();
         }
 
+        // Get the sub course of the student
+        final String subCourseJson = jsonObject.get(ApiConstants.EnrollmentResource.NESTED_SUB_COURSE).
+                getAsJsonObject().toString();
+        final SubCourse subCourse = jsonToSubCourse(subCourseJson);
+
         // Deserialize the student information associated with this enrollment
         final String studentJSON = jsonObject.get(
-                ApiConstants.ENROLLMENTS_NESTED_STUDENT).toString();
+                ApiConstants.EnrollmentResource.NESTED_STUDENT).toString();
         final Student student = jsonToStudent(studentJSON);
 
-        // Deserialize the student authorizations in an Authorization array
+        // Deserialize the student authorizations into an Authorization object array
         final String authorizationJSON = jsonObject.get(
-                ApiConstants.ENROLLMENTS_NESTED_AUTHORIZATIONS).toString();
+                ApiConstants.EnrollmentResource.NESTED_AUTHORIZATIONS).toString();
         final Authorization[] authorizations = jsonToAuthorizations(authorizationJSON);
 
         // Returns a new Enrollment object based on the JSON data
-        return new Enrollment(id, group, course, student, authorizations);
+        return new Enrollment(id, group, subCourse, student, authorizations);
     }
 
     /**
@@ -74,6 +77,21 @@ public class EnrollmentDeserializer implements JsonDeserializer<Enrollment> {
     }
 
     /**
+     * Returns a SubCourse object from a JSON string representation
+     *
+     * @param subCourseJSON JSON string to be converted to a SubCourse object
+     * @return SubCourse class object
+     */
+    private SubCourse jsonToSubCourse(String subCourseJSON) {
+        // Set the sub course deserializer
+        GsonBuilder gsonBuilder = new GsonBuilder();
+        gsonBuilder.registerTypeAdapter(SubCourse.class, new SubCourseDeserializer());
+        Gson subCourseGSON = gsonBuilder.create();
+        // Deserialize the student JSON into a SubCourse object
+        return subCourseGSON.fromJson(subCourseJSON, SubCourse.class);
+    }
+
+    /**
      * Returns an Authorization object array from a JSON string representation
      *
      * @param authorizationJSON JSON string to be converted to a an Authorization array
@@ -83,8 +101,8 @@ public class EnrollmentDeserializer implements JsonDeserializer<Enrollment> {
         // Set the authorization deserializer
         GsonBuilder gsonBuilder = new GsonBuilder();
         gsonBuilder.registerTypeAdapter(Authorization.class, new AuthorizationDeserializer());
-        Gson registrationsGSON = gsonBuilder.create();
+        Gson authorizationsGSON = gsonBuilder.create();
         // Deserialize the authorization JSON into an Authorization object array
-        return registrationsGSON.fromJson(authorizationJSON, Authorization[].class);
+        return authorizationsGSON.fromJson(authorizationJSON, Authorization[].class);
     }
 }

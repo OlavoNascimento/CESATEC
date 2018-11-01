@@ -1,45 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
     android:baselineAligned="false"
     android:divider="?android:attr/dividerHorizontal"
-    android:orientation="horizontal"
-    android:showDividers="middle"
-    tools:context=".activities.mainActivity.StudentListActivity">
+    android:showDividers="middle">
 
-    <!--
-    This layout is a two-pane layout for the Students
-    master/detail flow.
-    
-    -->
+    <RelativeLayout
+        android:id="@+id/course_list_container"
+        android:layout_width="300dp"
+        android:layout_height="match_parent">
 
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/course_list"
-        android:name="cesatec.cesatec.StudentListFragment"
-        android:layout_width="@dimen/item_width"
-        android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        app:layoutManager="android.support.v7.widget.LinearLayoutManager"
-        tools:context="cesatec.cesatec.StudentListActivity"
-        tools:listitem="@layout/student_list_content" />
+        <TextView
+            android:id="@+id/api_status_fetch_courses"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/course_list"
+            android:layout_alignLeft="@+id/course_list"
+            android:layout_alignEnd="@+id/course_list"
+            android:layout_alignRight="@+id/course_list"
+            android:layout_alignBottom="@+id/course_list"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="100dp"
+            android:layout_marginRight="50dp"
+            android:layout_marginBottom="100dp"
+            android:gravity="center"
+            android:textIsSelectable="false"
+            android:textSize="24sp"
+            android:visibility="visible" />
 
-    <FrameLayout
-        android:id="@+id/student_list_container"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="3">
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/student_list"
+            android:id="@+id/course_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
-    </FrameLayout>
+            android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
+            android:layout_marginLeft="0dp"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="0dp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/student_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/api_status_fetch_students"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/student_list"
+            android:layout_alignLeft="@+id/student_list"
+            android:layout_alignTop="@+id/student_list"
+            android:layout_alignEnd="@+id/student_list"
+            android:layout_alignRight="@+id/student_list"
+            android:layout_alignBottom="@+id/student_list"
+            android:layout_gravity="center"
+            android:layout_margin="100dp"
+            android:gravity="center"
+            android:textIsSelectable="false"
+            android:textSize="24sp"
+            android:visibility="visible" />
+
+        <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/student_list"
+            android:name="com.example.test.rest.StudentsListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="invisible"
+            app:layoutManager="android.support.v7.widget.GridLayoutManager"
+            tools:context="cesatec.cesatec.activities.mainActivity.StudentsListActivity"
+            tools:listitem="@layout/student_list_content" />
+
+    </RelativeLayout>
 
 </LinearLayout>

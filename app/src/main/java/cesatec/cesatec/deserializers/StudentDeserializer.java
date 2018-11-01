@@ -23,13 +23,13 @@ public class StudentDeserializer implements JsonDeserializer<Student> {
         final JsonObject jsonObject = json.getAsJsonObject();
 
         // Get the student name
-        final String name = jsonObject.get(ApiConstants.STUDENTS_FIELD_NAME).getAsString();
+        final String name = jsonObject.get(ApiConstants.StudentsResource.FIELD_NAME).getAsString();
 
         // Get the student register number
-        final int ra = jsonObject.get(ApiConstants.STUDENTS_FIELD_ENROLL_ID).getAsInt();
+        final int ra = jsonObject.get(ApiConstants.StudentsResource.FIELD_ENROLL_ID).getAsInt();
 
         // Get the student avatar url
-        final JsonElement imageElement = jsonObject.get(ApiConstants.STUDENTS_FIELD_IMAGE);
+        final JsonElement imageElement = jsonObject.get(ApiConstants.StudentsResource.FIELD_IMAGE);
         String imageUrl;
         if (imageElement.isJsonNull()) {
             imageUrl = null;

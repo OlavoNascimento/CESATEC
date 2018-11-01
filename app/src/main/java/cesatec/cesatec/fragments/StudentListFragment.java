@@ -10,6 +10,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 
 import java.util.ArrayList;
@@ -18,7 +19,8 @@ import java.util.ListIterator;
 import cesatec.cesatec.R;
 import cesatec.cesatec.adapters.EnrollmentAdapter;
 import cesatec.cesatec.models.Enrollment;
-import cesatec.cesatec.network.ApiFetchEnrollmentsTask;
+import cesatec.cesatec.network.AsyncTasks.ApiCreateRegistryTask;
+import cesatec.cesatec.network.AsyncTasks.ApiFetchEnrollmentsTask;
 
 /**
  * Fragment that displays all Enrollments in a RecyclerView
@@ -26,12 +28,12 @@ import cesatec.cesatec.network.ApiFetchEnrollmentsTask;
 public class StudentListFragment extends android.support.v4.app.Fragment {
     private static final String TAG = "StudentListFragment";
 
-    private boolean twoPane;
+    private int selectedCourseId = -1;
     private ArrayList<Enrollment> enrollmentsList;
     private ArrayList<Enrollment> enrollmentsUpdateStatus = new ArrayList<>();
 
     /**
-     * Save the Enrollment ArrayList on a bundle before the fragment is destroyed
+     * Store the enrollments ArrayList on a bundle before the fragment is destroyed
      *
      * @param outState Bundle containing variables to be reused when the fragment is recreated
      */
@@ -39,7 +41,8 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        // Save studentList to bundle, so it can be used when the fragment is recreated
+        // Store the enrollments list to a bundle,
+        // so it can be used when the fragment is recreated
         if (enrollmentsList != null) {
             outState.putParcelableArrayList("enrollments_list", enrollmentsList);
         }
@@ -51,20 +54,20 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
 
         Activity activity = getActivity();
         if (activity != null) {
-            // TODO Implement two panels
-            if (activity.findViewById(R.id.course_list) != null) {
-                // The list of courses will be present only on
-                // large screen layouts (student_list.xml 900dp)
-                twoPane = true;
-            }
-
             FloatingActionButton fab = activity.findViewById(R.id.fab);
+            // Send the enrollments on the enrollmentsUpdateStatus list
+            // to the API when a long click is registered
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     sendEnrollmentsStatus(view);
                 }
             });
+
+            Bundle arguments = getArguments();
+            if (arguments != null) {
+                selectedCourseId = arguments.getInt("course_id");
+            }
 
             if (savedInstanceState == null) {
                 // When the fragment is created by the first time fetch the JSON from the server
@@ -75,35 +78,49 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
                 // use the data already retrieved to set up the recycler view
                 // Avoiding unnecessary requests to the API
                 enrollmentsList = savedInstanceState.getParcelableArrayList("enrollments_list");
-                setUpRecyclerView(activity, enrollmentsList);
+                setUpRecyclerView(activity);
             }
         }
-
     }
 
     /**
-     * Set an ArrayList of Students to a recycler view
-     *
-     * @param activity            Activity containing the recycler view
-     * @param enrollmentArrayList ArrayList of Students to bind to the recycler view
+     * Set an ArrayList of enrollment to a recycler view
+     * based on the current select course
+     * @param activity Activity containing the recycler view
      */
-    public void setUpRecyclerView(Activity activity, ArrayList<Enrollment> enrollmentArrayList) {
-        if (enrollmentsList == null) {
-            // Save the retrieved array list for the first time
-            // so it can be reused when the fragment is recreated
-            this.enrollmentsList = enrollmentArrayList;
+    public void setUpRecyclerView(Activity activity) {
+        if (enrollmentsList != null) {
+            Log.d(TAG, "setUpRecyclerView: " + selectedCourseId);
+            // Array list containing the enrollments of the selected course
+            ArrayList<Enrollment> updatedEnrollmentList = new ArrayList<>();
+            if (selectedCourseId != -1) {
+                // Add all enrollments of the selected course to the ArrayList
+                for (Enrollment enrollment : enrollmentsList) {
+                    if (enrollment.getSubCourse().getParentCourseId() == selectedCourseId) {
+                        updatedEnrollmentList.add(enrollment);
+                    }
+                }
+            } else {
+                // Add all enrollments in case the global
+                // course is selected
+                updatedEnrollmentList = enrollmentsList;
+            }
+
+
+            RecyclerView rvStudents = activity.findViewById(R.id.student_list);
+            // Set the recycler view adapter
+            EnrollmentAdapter enrollmentAdapter = new EnrollmentAdapter(activity,
+                    this, updatedEnrollmentList);
+            rvStudents.setAdapter(enrollmentAdapter);
+
+            // Set the visibility of the recycler view that will display the list
+            rvStudents.setVisibility(View.VISIBLE);
+
+            // Set the gridlayout to the maximum number of columns possible
+            rvStudents.setLayoutManager(
+                    new GridLayoutManager(activity,
+                            calculateNoOfColumns(activity)));
         }
-        RecyclerView rvStudents = activity.findViewById(R.id.student_list);
-        // Set the recycler view student adapter
-        EnrollmentAdapter adapter = new EnrollmentAdapter(activity,
-                this, enrollmentArrayList);
-        rvStudents.setAdapter(adapter);
-        // Show the recycler view that will display the list
-        rvStudents.setVisibility(View.VISIBLE);
-        // Set the gridlayout to maximum number of columns possible
-        rvStudents.setLayoutManager(
-                new GridLayoutManager(activity,
-                        calculateNoOfColumns(activity)));
     }
 
     /**
@@ -118,6 +135,13 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
         return (int) (dpWidth / 180);
     }
 
+    /**
+     * Send the current enrollments on the enrollmentsUpdateStatus list
+     * to the API
+     *
+     * @param view View used to create the snack bar
+     *             that display the status of the operation
+     */
     private void sendEnrollmentsStatus(View view) {
         Activity activity = getActivity();
         if (activity != null) {
@@ -133,8 +157,11 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
 
                 // Iterate through the enrollments setting them to false and removing them from
                 // the enrollments to be updated list
+                // TODO Add return registry
                 while(iterator.hasNext()) {
                     Enrollment enrollment = iterator.next();
+                    // Create a new registry of the student
+                    new ApiCreateRegistryTask(activity, enrollment);
                     // Set the enrollment as unselected
                     enrollment.setSelected(false);
                     // Remove the enrollment from the list
@@ -142,7 +169,7 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
                 }
 
                 // Update the recycler view
-                setUpRecyclerView(activity, enrollmentsList);
+                setUpRecyclerView(activity);
             } else {
                 // No enrollment was selected
                 message = getString(R.string.student_no_enrollments_sent);
@@ -151,10 +178,37 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
         }
     }
 
+    /**
+     * Used by ApiFetchEnrollmentsTask to save the retrieved enrollments
+     * to the fragment list avoiding calling the API again
+     *
+     * @param enrollmentsList Enrollment list retrieved from the API
+     *                        by the ApiFetchEnrollmentsTask
+     */
+    public void setEnrollmentsList(ArrayList<Enrollment> enrollmentsList) {
+        // Save the retrieved array list for the first time
+        // so it can be reused when the fragment is recreated
+        this.enrollmentsList = enrollmentsList;
+    }
+
+    /**
+     * Add an enrollment to the enrollments to be updated list
+     * Used by EnrollmentAdapter class to add an
+     * enrollment to the enrollmentsUpdateStatus list
+     *
+     * @param enrollment Enrollment to be added to the list
+     */
     public void addToUpdateStatus(Enrollment enrollment) {
         enrollmentsUpdateStatus.add(enrollment);
     }
 
+    /**
+     * Remove an enrollment from the enrollments to be updated list
+     * Used by EnrollmentAdapter class to remove an
+     * enrollment from the enrollmentsUpdateStatus list
+     *
+     * @param enrollment Enrollment to be removed from the list
+     */
     public void removeFromUpdateStatus(Enrollment enrollment) {
         enrollmentsUpdateStatus.remove(enrollment);
     }

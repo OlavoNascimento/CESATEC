@@ -1,4 +1,4 @@
-package cesatec.cesatec.network;
+package cesatec.cesatec.network.AsyncTasks;
 
 import android.content.Context;
 import android.os.AsyncTask;
@@ -35,11 +35,12 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
         this.contextWeakReference = new WeakReference<>(context);
         this.enrollment = enrollment;
         try {
-            this.api_url = new URL(ApiConstants.API_REGISTRIES_ENDPOINT);
+            this.api_url = new URL(ApiConstants.RegistriesResource.API_ENDPOINT);
         } catch (MalformedURLException e) {
             Log.e(TAG,
                     "ApiCreateRegistryTask: Malformed API url endpoint '" +
-                            ApiConstants.API_REGISTRIES_ENDPOINT + "', check API constants!");
+                            ApiConstants.RegistriesResource.API_ENDPOINT +
+                            "', check API constants!");
         }
     }
 
@@ -119,7 +120,7 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
 
     /**
      * Use an Enrollment object to form url parameters used to send a POST request.
-     * Ex: id=example&name=example
+     * Ex: id=1&name=example
      *
      * @return Parameters representation of Enrollment object
      */
@@ -128,11 +129,16 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
         // TODO Add return registry
         // Encode the string values and concatenate them
         // into a url containing the registry data
-        return URLEncoder.encode(ApiConstants.REGISTRIES_FIELD_ENROLLMENT_ID, "UTF-8") +
+        return URLEncoder.encode(
+                ApiConstants.RegistriesResource.FIELD_ENROLLMENT_ID, "UTF-8") +
                 "=" + enrollment.getId() +
-                "&" + URLEncoder.encode(ApiConstants.REGISTRIES_FIELD_TYPE_ID, "UTF-8") +
-                "=" + ApiConstants.REGISTER_FIELD_TYPE_OUT_ID +
-                "&" + URLEncoder.encode(ApiConstants.REGISTRIES_FIELD_DATE_TIME, "UTF-8") +
+
+                "&" + URLEncoder.encode(
+                ApiConstants.RegistriesResource.FIELD_TYPE_ID, "UTF-8") +
+                "=" + ApiConstants.RegistryTypesResource.FIELD_TYPE_EXIT_ID +
+
+                "&" + URLEncoder.encode(
+                ApiConstants.RegistriesResource.FIELD_DATE_TIME, "UTF-8") +
                 "=" + URLEncoder.encode(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US)
                 .format(new java.util.Date()), "UTF-8");
     }

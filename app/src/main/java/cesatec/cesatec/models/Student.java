@@ -16,7 +16,7 @@ public class Student implements Parcelable {
     public static final Creator<Student> CREATOR = new Creator<Student>() {
         /**
          * Instantiate a Student from a parcelable
-         * @param in Parcelable to be converted to Student
+         * @param in Parcelable used to create a Student
          * @return Student object
          */
         @Override
@@ -56,7 +56,8 @@ public class Student implements Parcelable {
      * Instantiate a Student object from a parcelable
      * Used to move the class between activities
      *
-     * @param in Parcelable to be used on the creation the Student
+     * @param in Parcelable that contains the Student
+     *           object information
      */
     private Student(Parcel in) {
         this.name = in.readString();

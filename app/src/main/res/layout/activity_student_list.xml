@@ -20,27 +20,15 @@
             app:popupTheme="@style/AppTheme.PopupOverlay" />
     </android.support.design.widget.AppBarLayout>
 
-    <TextView
-        android:id="@+id/api_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:gravity="center"
-        android:textIsSelectable="false"
-        android:textSize="24sp"
-        android:visibility="visible"
-        app:layout_anchor="@+id/frameLayout"
-        app:layout_anchorGravity="center" />
-
-    <FrameLayout
-        android:id="@+id/frameLayout"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <include layout="@layout/student_list" />
-    </FrameLayout>
+        <include
+            android:id="@+id/include_student_list"
+            layout="@layout/student_list" />
+    </RelativeLayout>
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"

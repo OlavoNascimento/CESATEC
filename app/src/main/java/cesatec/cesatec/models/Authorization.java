@@ -9,7 +9,7 @@ public class Authorization implements Parcelable {
     public static final Creator<Authorization> CREATOR = new Creator<Authorization>() {
         /**
          * Instantiate a Authorization from a parcelable
-         * @param in Parcelable to be converted to Authorization
+         * @param in Parcelable used to create a Authorization
          * @return Authorization object
          */
         @Override
@@ -49,7 +49,8 @@ public class Authorization implements Parcelable {
      * Instantiate a Authorization object from a parcelable
      * Used to move the class between activities
      *
-     * @param in Parcelable to be used to create the Authorization
+     * @param in Parcelable that contains the Authorization
+     *           object information
      */
     private Authorization(Parcel in) {
         this.authorizationStart = in.readString();

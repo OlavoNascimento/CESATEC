@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
 import cesatec.cesatec.R;
+import cesatec.cesatec.fragments.CourseListFragment;
 import cesatec.cesatec.fragments.StudentListFragment;
 
 /**
@@ -26,12 +27,24 @@ public class StudentListActivity extends AppCompatActivity {
         toolbar.setTitle(getTitle());
 
         FragmentManager fm = getSupportFragmentManager();
+
+        if (findViewById(R.id.course_list) != null) {
+            // The list of courses will be present only on
+            // large screen layouts (student_list.xml 900dp)
+            Fragment coursesListFragment = fm.findFragmentById(R.id.course_list);
+            if (coursesListFragment == null) {
+                // Create the course list fragment if it doesn't already exist
+                CourseListFragment newCourseListFragment = new CourseListFragment();
+                fm.beginTransaction().add(R.id.course_list, newCourseListFragment).commit();
+            }
+        }
+
         // Try to reuse the student list fragment
-        Fragment fetchFragment = fm.findFragmentByTag("student_list_fragment");
-        if (fetchFragment == null) {
-            // Recreate the student list fragment if it doesn't already exist
-            StudentListFragment newFetchFragment = new StudentListFragment();
-            fm.beginTransaction().add(newFetchFragment, "student_list_fragment").commit();
+        Fragment studentListFragment = fm.findFragmentById(R.id.student_list);
+        if (studentListFragment == null) {
+            // Create the student list fragment if it doesn't already exist
+            StudentListFragment newStudentListFragment = new StudentListFragment();
+            fm.beginTransaction().add(R.id.student_list, newStudentListFragment).commit();
         }
     }
 }
