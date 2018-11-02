@@ -1,5 +1,6 @@
 package cesatec.cesatec.deserializers;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
@@ -23,7 +24,17 @@ public class CourseDeserializer implements JsonDeserializer<Course> {
         // Get the name of the course
         final String name = jsonObject.get(ApiConstants.CoursesResource.FIELD_NAME).getAsString();
 
+        // The two sub courses of this course
+        final JsonArray subCourses = jsonObject.get(
+                ApiConstants.CoursesResource.NESTED_SUB_COURSES).getAsJsonArray();
+
+        final int firstSubCourse = subCourses.get(1).getAsJsonObject().get(
+                ApiConstants.SubCoursesResource.FIELD_ID).getAsInt();
+
+        final int secondSubCourse = subCourses.get(2).getAsJsonObject().get(
+                ApiConstants.SubCoursesResource.FIELD_ID).getAsInt();
+
         // Returns a new Course object based on the JSON data
-        return new Course(id, name);
+        return new Course(id, name, firstSubCourse, secondSubCourse);
     }
 }

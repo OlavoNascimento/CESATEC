@@ -3,7 +3,7 @@ package cesatec.cesatec.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 
 public class Enrollment implements Parcelable {
     private static final String TAG = "Enrollment";
@@ -32,9 +32,9 @@ public class Enrollment implements Parcelable {
 
     private final int id;
     private final String group;
-    private final SubCourse subCourse;
+    private final String subCourseName;
     private final Student student;
-    private final Authorization[] authorizations;
+    private final ArrayList<Authorization> authorizations;
 
     private boolean isSelected;
 
@@ -43,15 +43,15 @@ public class Enrollment implements Parcelable {
      *
      * @param id             Id of the enrollment
      * @param group          Group to which the enrollment belongs
-     * @param subCourse      Sub course of the student
+     * @param subCourseName      Sub course of the student
      * @param student        Student associated with the enrollment
      * @param authorizations All authorizations related to the enrollment
      */
-    public Enrollment(int id, String group, SubCourse subCourse, Student student,
-                      Authorization[] authorizations) {
+    public Enrollment(int id, String group, String subCourseName, Student student,
+                      ArrayList<Authorization> authorizations) {
         this.id = id;
         this.group = group;
-        this.subCourse = subCourse;
+        this.subCourseName = subCourseName;
         this.student = student;
         this.authorizations = authorizations;
         this.isSelected = false;
@@ -67,9 +67,13 @@ public class Enrollment implements Parcelable {
     private Enrollment(Parcel in) {
         this.id = in.readInt();
         this.group = in.readString();
-        this.subCourse = in.readParcelable(SubCourse.class.getClassLoader());
+        this.subCourseName = in.readString();
         this.student = in.readParcelable(Student.class.getClassLoader());
-        this.authorizations = in.createTypedArray(Authorization.CREATOR);
+
+        ArrayList<Authorization> authorizations = new ArrayList<>();
+        in.readList(authorizations, Authorization.class.getClassLoader());
+        this.authorizations = authorizations;
+
         this.isSelected = in.readInt() == 1;
     }
 
@@ -82,9 +86,9 @@ public class Enrollment implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(id);
         out.writeString(group);
-        out.writeParcelable(subCourse, 0);
+        out.writeString(subCourseName);
         out.writeParcelable(student, 0);
-        out.writeTypedArray(authorizations, 0);
+        out.writeList(authorizations);
         out.writeInt(isSelected ? 1 : 0);
     }
 
@@ -101,15 +105,15 @@ public class Enrollment implements Parcelable {
         return group;
     }
 
-    public SubCourse getSubCourse() {
-        return subCourse;
+    public String getSubCourseName() {
+        return subCourseName;
     }
 
     public Student getStudent() {
         return student;
     }
 
-    public Authorization[] getAuthorizations() {
+    public ArrayList<Authorization> getAuthorizations() {
         return authorizations;
     }
 
@@ -126,9 +130,9 @@ public class Enrollment implements Parcelable {
         return "Enrollment{" +
                 "id=" + id +
                 ", group='" + group + '\'' +
-                ", course='" + subCourse.toString() + '\'' +
+                ", subCourseName='" + subCourseName + '\'' +
                 ", student=" + student +
-                ", authorizations=" + Arrays.toString(authorizations) +
+                ", authorizations=" + authorizations +
                 ", isSelected=" + isSelected +
                 '}';
     }

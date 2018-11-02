@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 public class Course implements Parcelable {
+    private static final String TAG = "Course";
+    
     public static final Creator<Course> CREATOR = new Creator<Course>() {
         /**
          * Instantiate a Course from a parcelable
@@ -25,19 +27,17 @@ public class Course implements Parcelable {
             return new Course[size];
         }
     };
-    private static final String TAG = "Course";
+
     private final int id;
     private final String name;
+    private final int firstSubCourseId;
+    private final int secondSubCourseId;
 
-    /**
-     * Instantiate a Course object using parameters
-     *
-     * @param id   Id of the parent course
-     * @param name Name of the sub course
-     */
-    public Course(int id, String name) {
+    public Course(int id, String name, int firstSubCourseId, int secondSubCourseId) {
         this.id = id;
         this.name = name;
+        this.firstSubCourseId = firstSubCourseId;
+        this.secondSubCourseId = secondSubCourseId;
     }
 
     /**
@@ -50,6 +50,8 @@ public class Course implements Parcelable {
     private Course(Parcel in) {
         this.id = in.readInt();
         this.name = in.readString();
+        this.firstSubCourseId = in.readInt();
+        this.secondSubCourseId = in.readInt();
     }
 
     /**
@@ -61,6 +63,8 @@ public class Course implements Parcelable {
     public void writeToParcel(Parcel out, int flags) {
         out.writeInt(id);
         out.writeString(name);
+        out.writeInt(firstSubCourseId);
+        out.writeInt(secondSubCourseId);
     }
 
     @Override
@@ -74,6 +78,14 @@ public class Course implements Parcelable {
 
     public String getName() {
         return name;
+    }
+
+    public int getFirstSubCourseId() {
+        return firstSubCourseId;
+    }
+
+    public int getSecondSubCourseId() {
+        return secondSubCourseId;
     }
 
     @Override

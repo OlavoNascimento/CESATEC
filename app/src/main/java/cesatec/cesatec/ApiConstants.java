@@ -51,6 +51,8 @@ public final class ApiConstants {
         // Resource name
         // Used by ApiFetchCoursesTask
         private static final String RESOURCE_NAME = "cursos";
+        // Nested resources
+        public static final String NESTED_SUB_COURSES = "turmas";
         // Endpoint
         // Used by ApiFetchCoursesTask
         public static final String API_ENDPOINT = API_URL + RESOURCE_NAME;
@@ -58,13 +60,22 @@ public final class ApiConstants {
 
     /**
      * SubCourses API resource
-     * Used by SubCourseDeserializer
+     * Used by SubCourseDeserializer and ApiFetchSubCourseTask
      */
     public class SubCoursesResource {
         // Value fields
         // Used by EnrollmentDeserializer
+        public static final String FIELD_ID = "id";
         public static final String FIELD_PARENT_COURSE_ID = "curso_id";
         public static final String FIELD_NAME = "nome";
+        // Nested resources
+        public static final String NESTED_ENROLLMENTS = "matriculas";
+        // Resource name
+        // Used by ApiFetchSubCourseTask
+        private static final String RESOURCE_NAME = "turmas";
+        // Endpoint
+        // Used by ApiFetchSubCourseTask
+        public static final String API_ENDPOINT = API_URL + RESOURCE_NAME;
     }
 
     /**

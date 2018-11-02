@@ -24,8 +24,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import cesatec.cesatec.R;
 import cesatec.cesatec.adapters.EnrollmentAdapter;
 import cesatec.cesatec.models.Enrollment;
+import cesatec.cesatec.models.SubCourse;
 import cesatec.cesatec.network.asyncTasks.ApiCreateRegistryTask;
-import cesatec.cesatec.network.asyncTasks.ApiFetchEnrollmentsTask;
+import cesatec.cesatec.network.asyncTasks.ApiFetchSubCourseTask;
 
 /**
  * Fragment that displays all Enrollments in a RecyclerView
@@ -34,8 +35,14 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
     private static final String TAG = "StudentListFragment";
 
     private FloatingActionButton fab;
-    private int selectedCourseId = -1;
-    private ArrayList<Enrollment> enrollmentsList;
+    private int selectedCourseId = 1;
+
+    private int firstSubCourseId = 1;
+    private int secondSubCourseId = 2;
+
+    private SubCourse firstSubCourse;
+    private SubCourse secondSubCourse;
+
     private ArrayList<Enrollment> enrollmentsUpdateStatus = new ArrayList<>();
     private int enrollmentsUpdateStatusSize;
     private int successfulCreatedRegistries = 0;
@@ -63,8 +70,11 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
 
         // Store the enrollments list to a bundle,
         // so it can be used when the fragment is recreated
-        if (enrollmentsList != null) {
-            outState.putParcelableArrayList("enrollments_list", enrollmentsList);
+        if (firstSubCourse != null) {
+            outState.putParcelable("first_sub_course", firstSubCourse);
+        }
+        if (secondSubCourse != null) {
+            outState.putParcelable("second_sub_course", secondSubCourse);
         }
     }
 
@@ -91,56 +101,76 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
             Bundle arguments = getArguments();
             if (arguments != null) {
                 selectedCourseId = arguments.getInt("course_id");
+                firstSubCourseId = arguments.getInt("first_sub_course_id");
+                secondSubCourseId = arguments.getInt("second_sub_course_id");
             }
 
             if (savedInstanceState == null) {
                 // When the fragment is created by the first time fetch the JSON from the server
                 // and save it on studentList
-                new ApiFetchEnrollmentsTask(activity, this).execute();
+                new ApiFetchSubCourseTask(activity, this, firstSubCourseId).execute();
+                new ApiFetchSubCourseTask(activity, this, secondSubCourseId).execute();
             } else {
                 // If the fragment is being recreated,
                 // use the data already retrieved to set up the recycler view
                 // Avoiding unnecessary requests to the API
-                enrollmentsList = savedInstanceState.getParcelableArrayList("enrollments_list");
-                setUpRecyclerView(activity);
+                firstSubCourse = savedInstanceState.getParcelable("first_sub_course");
+                secondSubCourse = savedInstanceState.getParcelable("second_sub_course");
+                setUpFirstSubCourseRecyclerView(activity);
+                setUpSecondSubCourseRecyclerView(activity);
             }
+        }
+    }
+
+    /**
+     * @param activity Activity containing the recycler view
+     */
+    public void setUpFirstSubCourseRecyclerView(Activity activity) {
+        // Array list containing the enrollments of the selected course
+        if (firstSubCourse.getEnrollments() != null) {
+            Log.d(TAG, "setUpRecyclerView: biding first course " + firstSubCourseId);
+
+            RecyclerView rvFirstSubCourse = activity.findViewById(R.id.first_sub_course_student_list);
+            Log.d(TAG, "setUpFirstSubCourseRecyclerView: " + rvFirstSubCourse);
+            setUpRecyclerView(activity, rvFirstSubCourse, firstSubCourse.getEnrollments());
+        }
+    }
+
+    /**
+     * @param activity Activity containing the recycler view
+     */
+    public void setUpSecondSubCourseRecyclerView(Activity activity) {
+        // Array list containing the enrollments of the selected course
+        if (secondSubCourse.getEnrollments() != null) {
+            Log.d(TAG, "setUpRecyclerView: biding second course" + secondSubCourseId);
+
+            RecyclerView rvSecondSubCourse = activity.findViewById(R.id.second_sub_course_student_list);
+            Log.d(TAG, "setUpFirstSubCourseRecyclerView: " + rvSecondSubCourse);
+            setUpRecyclerView(activity, rvSecondSubCourse, secondSubCourse.getEnrollments());
         }
     }
 
     /**
      * Set an ArrayList of enrollment to a recycler view
      * based on the current select course
-     * @param activity Activity containing the recycler view
      */
-    public void setUpRecyclerView(Activity activity) {
-        if (enrollmentsList != null) {
+    public void setUpRecyclerView(Activity activity,
+                                  RecyclerView recyclerView,
+                                  ArrayList<Enrollment> enrollments) {
+        // Array list containing the enrollments of the selected course
+        if (enrollments != null) {
             Log.d(TAG, "setUpRecyclerView: " + selectedCourseId);
-            // Array list containing the enrollments of the selected course
-            ArrayList<Enrollment> updatedEnrollmentList = new ArrayList<>();
-            if (selectedCourseId != -1) {
-                // Add all enrollments of the selected course to the ArrayList
-                for (Enrollment enrollment : enrollmentsList) {
-                    if (enrollment.getSubCourse().getParentCourseId() == selectedCourseId) {
-                        updatedEnrollmentList.add(enrollment);
-                    }
-                }
-            } else {
-                // Add all enrollments in case the global
-                // course is selected
-                updatedEnrollmentList = enrollmentsList;
-            }
 
-            RecyclerView rvStudents = activity.findViewById(R.id.student_list);
             // Set the recycler view adapter
             EnrollmentAdapter enrollmentAdapter = new EnrollmentAdapter(activity,
-                    this, updatedEnrollmentList);
-            rvStudents.setAdapter(enrollmentAdapter);
+                    this, enrollments);
+            recyclerView.setAdapter(enrollmentAdapter);
 
             // Set the visibility of the recycler view that will display the list
-            rvStudents.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.VISIBLE);
 
             // Set the gridlayout to the maximum number of columns possible
-            rvStudents.setLayoutManager(
+            recyclerView.setLayoutManager(
                     new GridLayoutManager(activity,
                             calculateNoOfColumns(activity)));
         }
@@ -189,7 +219,8 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
                 }
 
                 // Update the recycler view
-                setUpRecyclerView(activity);
+                setUpFirstSubCourseRecyclerView(activity);
+                setUpSecondSubCourseRecyclerView(activity);
             } else {
                 // No enrollment was selected
                 String message = getString(R.string.student_no_enrollments_sent);
@@ -198,17 +229,16 @@ public class StudentListFragment extends android.support.v4.app.Fragment {
         }
     }
 
-    /**
-     * Used by ApiFetchEnrollmentsTask to save the retrieved enrollments
-     * to the fragment list avoiding calling the API again
-     *
-     * @param enrollmentsList Enrollment list retrieved from the API
-     *                        by the ApiFetchEnrollmentsTask
-     */
-    public void setEnrollmentsList(ArrayList<Enrollment> enrollmentsList) {
+    public void setFirstSubCourse(SubCourse subCourse) {
         // Save the retrieved array list for the first time
         // so it can be reused when the fragment is recreated
-        this.enrollmentsList = enrollmentsList;
+        this.firstSubCourse = subCourse;
+    }
+
+    public void setSecondSubCourse(SubCourse subCourse) {
+        // Save the retrieved array list for the first time
+        // so it can be reused when the fragment is recreated
+        this.secondSubCourse = subCourse;
     }
 
     /**

@@ -59,16 +59,6 @@ public class CourseListFragment extends Fragment {
      */
     public void setCourseList(ArrayList<Course> courseList) {
         this.courseList = courseList;
-        addGlobalCourse();
-    }
-
-    /**
-     * Add a course that contains all enrollments to the courses list
-     */
-    private void addGlobalCourse() {
-        // Add a course that contains all enrollments
-        Course globalCourse = new Course(-1, getString(R.string.global_course));
-        courseList.add(0, globalCourse);
     }
 
     /**

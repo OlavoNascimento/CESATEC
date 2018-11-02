@@ -67,6 +67,8 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
                     // only displaying the appropriated enrollments
                     Bundle arguments = new Bundle();
                     arguments.putInt("course_id", course.getId());
+                    arguments.putInt("first_sub_course_id", course.getFirstSubCourseId());
+                    arguments.putInt("second_sub_course_id", course.getSecondSubCourseId());
                     StudentListFragment newStudentListFragment = new StudentListFragment();
                     newStudentListFragment.setArguments(arguments);
                     // Replace the current StudentListFragment with a new one

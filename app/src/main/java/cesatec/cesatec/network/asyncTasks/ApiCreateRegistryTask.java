@@ -44,14 +44,20 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
         this.fragmentReference = new WeakReference<>(fragment);
         this.workingThreads = workingThreads;
         this.enrollment = enrollment;
+        this.api_url = getApiUrl();
+    }
+
+    private URL getApiUrl() {
+        String registriesApiEndPoint = ApiConstants.RegistriesResource.API_ENDPOINT;
         try {
-            this.api_url = new URL(ApiConstants.RegistriesResource.API_ENDPOINT);
+            return new URL(registriesApiEndPoint);
         } catch (MalformedURLException e) {
             Log.e(TAG,
-                    "ApiCreateRegistryTask: Malformed API url endpoint '" +
-                            ApiConstants.RegistriesResource.API_ENDPOINT +
-                            "', check API constants!");
+                    "getApiUrl: Malformed API url endpoint '" +
+                            registriesApiEndPoint
+                            + "', check API constants!");
         }
+        return null;
     }
 
     /**

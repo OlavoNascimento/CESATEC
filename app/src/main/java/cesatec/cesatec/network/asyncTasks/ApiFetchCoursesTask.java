@@ -34,14 +34,20 @@ public class ApiFetchCoursesTask extends
     public ApiFetchCoursesTask(Activity activity, CourseListFragment fragment) {
         this.activityReference = new WeakReference<>(activity);
         this.fragmentReference = new WeakReference<>(fragment);
+        this.apiUrl = getApiUrl();
+    }
+
+    private URL getApiUrl() {
+        String courseApiEndPoint = ApiConstants.CoursesResource.API_ENDPOINT;
         try {
-            this.apiUrl = new URL(ApiConstants.CoursesResource.API_ENDPOINT);
+            return new URL(courseApiEndPoint);
         } catch (MalformedURLException e) {
             Log.e(TAG,
-                    "ApiFetchCoursesTask: Malformed API url endpoint '" +
-                            ApiConstants.CoursesResource.API_ENDPOINT +
-                            "', check API constants!");
+                    "getApiUrl: Malformed API url endpoint '" +
+                            courseApiEndPoint
+                            + "', check API constants!");
         }
+        return null;
     }
 
     @Override

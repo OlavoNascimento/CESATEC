@@ -84,7 +84,7 @@ public class StudentDetailFragment extends Fragment {
             // Set the student course
             TextView subCourseView = activity.findViewById(R.id.detail_student_sub_course);
             String subCourseText = getString(R.string.student_detail_course,
-                    enrollment.getSubCourse().getName());
+                    enrollment.getSubCourseName());
             subCourseView.setText(subCourseText);
         }
     }
