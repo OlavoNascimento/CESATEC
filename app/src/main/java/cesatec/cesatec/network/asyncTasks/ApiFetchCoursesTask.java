@@ -1,4 +1,4 @@
-package cesatec.cesatec.network.AsyncTasks;
+package cesatec.cesatec.network.asyncTasks;
 
 import android.app.Activity;
 import android.os.AsyncTask;
@@ -21,7 +21,7 @@ import cesatec.cesatec.R;
 import cesatec.cesatec.deserializers.CourseDeserializer;
 import cesatec.cesatec.fragments.CourseListFragment;
 import cesatec.cesatec.models.Course;
-import cesatec.cesatec.network.Utils.WebUtilities;
+import cesatec.cesatec.network.utils.WebUtilities;
 
 public class ApiFetchCoursesTask extends
         AsyncTask<Void, ArrayList<Course>, ArrayList<Course>> {

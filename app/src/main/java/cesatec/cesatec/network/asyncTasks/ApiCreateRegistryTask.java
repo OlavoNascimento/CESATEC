@@ -1,9 +1,10 @@
-package cesatec.cesatec.network.AsyncTasks;
+package cesatec.cesatec.network.asyncTasks;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -15,10 +16,12 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.HttpsURLConnection;
 
 import cesatec.cesatec.ApiConstants;
+import cesatec.cesatec.fragments.StudentListFragment;
 import cesatec.cesatec.models.Enrollment;
 
 /**
@@ -27,12 +30,19 @@ import cesatec.cesatec.models.Enrollment;
 public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
     private static final String TAG = "ApiCreateRegistryTask";
 
-    private WeakReference<Context> contextWeakReference;
+    private WeakReference<Context> contextReference;
+    private WeakReference<StudentListFragment> fragmentReference;
+    private AtomicInteger workingThreads;
     private Enrollment enrollment;
     private URL api_url;
 
-    public ApiCreateRegistryTask(Context context, Enrollment enrollment) {
-        this.contextWeakReference = new WeakReference<>(context);
+    public ApiCreateRegistryTask(Context context,
+                                 StudentListFragment fragment,
+                                 AtomicInteger workingThreads,
+                                 Enrollment enrollment) {
+        this.contextReference = new WeakReference<>(context);
+        this.fragmentReference = new WeakReference<>(fragment);
+        this.workingThreads = workingThreads;
         this.enrollment = enrollment;
         try {
             this.api_url = new URL(ApiConstants.RegistriesResource.API_ENDPOINT);
@@ -62,14 +72,18 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
     @Override
     protected void onPostExecute(Boolean creationStatus) {
         super.onPostExecute(creationStatus);
+        int remainingThreads = workingThreads.decrementAndGet();
+        Log.d(TAG, "onPostExecute: " + remainingThreads);
         if (creationStatus) {
-            Toast.makeText(contextWeakReference.get(),
-                    "Students registries created successfully!",
-                    Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(contextWeakReference.get(),
-                    "Failed creating students registries!",
-                    Toast.LENGTH_SHORT).show();
+            StudentListFragment fragment = fragmentReference.get();
+            fragment.addToSuccessfulCreatedRegistries();
+        }
+        Context context = contextReference.get();
+        if (remainingThreads == 0) {
+            Log.d(TAG, "onPostExecute: sending broadcast");
+            // Warn the StudentListFragment that all registries tasks finished
+            LocalBroadcastManager mgr = LocalBroadcastManager.getInstance(context);
+            mgr.sendBroadcast(new Intent("all_registries_tasks_finished"));
         }
     }
 
@@ -82,6 +96,7 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
      */
     private boolean createStudentRegistry(Enrollment enrollment) {
         try {
+            Log.d(TAG, "createStudentRegistry: " + enrollment.toString());
             // Transform a Enrollment object to a string used to create a new registry
             String dataString = enrollmentToParameters(enrollment);
 
@@ -95,8 +110,8 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
             conn.setRequestProperty("Content-Length", Integer.toString(postDataLength));
 
             // Write the enrollment information to the API
-            OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream(),
-                    "UTF-8");
+            OutputStreamWriter out = new OutputStreamWriter(
+                    conn.getOutputStream(), "UTF-8");
             try {
                 out.write(dataString);
             } finally {

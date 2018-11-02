@@ -1,4 +1,4 @@
-package cesatec.cesatec.network.Utils;
+package cesatec.cesatec.network.utils;
 
 import android.support.annotation.NonNull;
 import android.util.Log;
@@ -29,7 +29,7 @@ public class WebUtilities {
                 // Return api response input stream as a string
                 return inputStreamToString(conn.getInputStream());
             } else {
-                Log.d(TAG, "Connection to " + url + "failed, " +
+                Log.e(TAG, "Connection to " + url + "failed, " +
                         "response code:" + conn.getResponseCode());
             }
         } catch (IOException e) {

@@ -13,6 +13,6 @@
     <string name="student_detail_group">Grupo: %1$s</string>
     <string name="student_detail_course">Curso: %1$s</string>
 
-    <string name="student_enrollments_sent">Status de %1$d alunos atualizados</string>
+    <string name="student_enrollments_sent">%1$d/%2$d status de alunos atualizados</string>
     <string name="student_no_enrollments_sent">Nenhum status de aluno atualizado</string>
 </resources>

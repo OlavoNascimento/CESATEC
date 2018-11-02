@@ -9,13 +9,13 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
 import cesatec.cesatec.R;
 import cesatec.cesatec.models.Enrollment;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 /**
  * Fragment that contains all details of a Student
@@ -71,7 +71,7 @@ public class StudentDetailFragment extends Fragment {
             // Set the student image
             String avatarUrl = enrollment.getStudent().getAvatarUrl();
             if (avatarUrl != null) {
-                ImageView avatarView = activity.findViewById(R.id.detail_student_avatar);
+                CircleImageView avatarView = activity.findViewById(R.id.detail_student_avatar);
                 Picasso.get().load(avatarUrl).into(avatarView);
             }
 

@@ -16,12 +16,12 @@
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        app:civ_border_color="@color/imageBorder"
-        app:civ_border_width="2dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@mipmap/ic_launcher" />
+        app:civ_border_color="@android:color/black"
+        app:civ_border_width="6dp"
+        app:srcCompat="@drawable/student_fallback" />
 
     <TextView
         android:id="@+id/student_list_name"

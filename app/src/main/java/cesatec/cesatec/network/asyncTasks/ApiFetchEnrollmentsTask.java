@@ -1,4 +1,4 @@
-package cesatec.cesatec.network.AsyncTasks;
+package cesatec.cesatec.network.asyncTasks;
 
 import android.app.Activity;
 import android.os.AsyncTask;
@@ -21,7 +21,7 @@ import cesatec.cesatec.R;
 import cesatec.cesatec.deserializers.EnrollmentDeserializer;
 import cesatec.cesatec.fragments.StudentListFragment;
 import cesatec.cesatec.models.Enrollment;
-import cesatec.cesatec.network.Utils.WebUtilities;
+import cesatec.cesatec.network.utils.WebUtilities;
 
 /**
  * Fetch the list of enrollments from the API

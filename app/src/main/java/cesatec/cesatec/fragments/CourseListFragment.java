@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import cesatec.cesatec.R;
 import cesatec.cesatec.adapters.CourseAdapter;
 import cesatec.cesatec.models.Course;
-import cesatec.cesatec.network.AsyncTasks.ApiFetchCoursesTask;
+import cesatec.cesatec.network.asyncTasks.ApiFetchCoursesTask;
 
 public class CourseListFragment extends Fragment {
     private static final String TAG = "CourseListFragment";
