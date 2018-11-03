@@ -3,5 +3,7 @@
     <color name="colorPrimary">#0d6061</color>
     <color name="colorPrimaryDark">#044546</color>
     <color name="colorAccent">#29aafc</color>
-    <color name="pendingImageBorder">#ffc125</color>
+    <color name="allowedImageBorder">#084e07</color>
+    <color name="notAllowedImageBorder">#940303</color>
+    <color name="selectedImageBorder">#ffc125</color>
 </resources>

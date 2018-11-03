@@ -9,7 +9,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-import cesatec.cesatec.ApiConstants;
+import cesatec.cesatec.constants.ApiConstants;
 import cesatec.cesatec.models.Course;
 
 public class CourseDeserializer implements JsonDeserializer<Course> {
@@ -28,10 +28,10 @@ public class CourseDeserializer implements JsonDeserializer<Course> {
         final JsonArray subCourses = jsonObject.get(
                 ApiConstants.CoursesResource.NESTED_SUB_COURSES).getAsJsonArray();
 
-        final int firstSubCourse = subCourses.get(1).getAsJsonObject().get(
+        final int firstSubCourse = subCourses.get(0).getAsJsonObject().get(
                 ApiConstants.SubCoursesResource.FIELD_ID).getAsInt();
 
-        final int secondSubCourse = subCourses.get(2).getAsJsonObject().get(
+        final int secondSubCourse = subCourses.get(1).getAsJsonObject().get(
                 ApiConstants.SubCoursesResource.FIELD_ID).getAsInt();
 
         // Returns a new Course object based on the JSON data

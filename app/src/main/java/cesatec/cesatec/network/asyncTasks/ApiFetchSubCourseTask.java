@@ -13,8 +13,8 @@ import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import cesatec.cesatec.ApiConstants;
 import cesatec.cesatec.R;
+import cesatec.cesatec.constants.ApiConstants;
 import cesatec.cesatec.deserializers.SubCourseDeserializer;
 import cesatec.cesatec.fragments.StudentListFragment;
 import cesatec.cesatec.models.SubCourse;
@@ -60,7 +60,8 @@ public class ApiFetchSubCourseTask extends
             // Set the waiting message text while retrieving the JSON data
             TextView apiStatusFetchStudents = activity.findViewById(
                     R.id.api_status_fetch_students);
-            apiStatusFetchStudents.setText(R.string.api_fetching_sub_course);
+            apiStatusFetchStudents.setText(R.string.api_fetching_enrollments);
+            apiStatusFetchStudents.setVisibility(View.VISIBLE);
         }
     }
 
@@ -85,26 +86,39 @@ public class ApiFetchSubCourseTask extends
      * @param subCourse ArrayList used by a RecyclerView
      */
     @Override
-    protected void onPostExecute(SubCourse subCourse) {
+    public void onPostExecute(SubCourse subCourse) {
         Activity activity = activityReference.get();
         if (activity != null) {
             // Hide the student list loading message
             TextView apiStatusFetchStudents = activity.findViewById(
                     R.id.api_status_fetch_students);
-            apiStatusFetchStudents.clearComposingText();
-            apiStatusFetchStudents.setVisibility(View.GONE);
+            apiStatusFetchStudents.setVisibility(View.INVISIBLE);
 
             // Get the fragment reference so it's functions can be called
             StudentListFragment studentListFragment = fragmentReference.get();
-            if (subCourse.getId() % 2 != 0) {
-                studentListFragment.setFirstSubCourse(subCourse);
+            if (isFirstSubCourse(subCourse)) {
+                TextView firstSubCourseHeader = activity.findViewById(
+                        R.id.first_sub_course_header);
+                if (firstSubCourseHeader != null) {
+                    firstSubCourseHeader.setVisibility(View.VISIBLE);
+                    studentListFragment.setFirstSubCourse(subCourse);
+                }
                 // Set the array list to the fragment RecyclerView
                 studentListFragment.setUpFirstSubCourseRecyclerView(activity);
             } else {
-                studentListFragment.setSecondSubCourse(subCourse);
+                TextView secondSubCourseHeader = activity.findViewById(
+                        R.id.second_sub_course_header);
+                if (secondSubCourseHeader != null) {
+                    secondSubCourseHeader.setVisibility(View.VISIBLE);
+                    studentListFragment.setSecondSubCourse(subCourse);
+                }
                 // Set the array list to the fragment RecyclerView
                 studentListFragment.setUpSecondSubCourseRecyclerView(activity);
             }
         }
+    }
+
+    private boolean isFirstSubCourse(SubCourse subCourse) {
+        return subCourse.getId() % 2 != 0;
     }
 }

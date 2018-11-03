@@ -3,7 +3,6 @@ package cesatec.cesatec.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,18 +16,19 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 
 import cesatec.cesatec.R;
-import cesatec.cesatec.fragments.StudentListFragment;
 import cesatec.cesatec.models.Course;
+import cesatec.cesatec.onClickListeners.CourseOnClickListener;
 
 public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseViewHolder> {
+    private static final String TAG = "CourseAdapter";
 
-    private WeakReference<Activity> activityReference;
-    private ArrayList<Course> coursesList;
     private View lastSelectedCourse;
+    private WeakReference<Activity> activityReference;
+    private ArrayList<Course> courseList;
 
-    public CourseAdapter(Activity activity, ArrayList<Course> coursesList) {
+    public CourseAdapter(Activity activity, ArrayList<Course> courseList) {
         this.activityReference = new WeakReference<>(activity);
-        this.coursesList = coursesList;
+        this.courseList = courseList;
     }
 
     @NonNull
@@ -46,10 +46,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     public void onBindViewHolder(@NonNull CourseViewHolder viewHolder, int position) {
         final AppCompatActivity activity = (AppCompatActivity) activityReference.get();
         if (activity != null) {
-            final Course course = coursesList.get(position);
+            final Course course = courseList.get(position);
 
-            // Set the first course as selected
-            if (position == 0) {
+            // Set the third course as selected by default
+            if (position == 2) {
                 View viewHolderBackground = viewHolder.courseNameView;
                 markCourseAsSelected(activity, viewHolderBackground);
                 lastSelectedCourse = viewHolderBackground;
@@ -58,34 +58,17 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
             // Set student name on list
             TextView courseNameView = viewHolder.courseNameView;
             courseNameView.setText(course.getName());
-
-            // Recreate the student list when changing the select course
-            courseNameView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Pass the course id to the StudentListFragment
-                    // only displaying the appropriated enrollments
-                    Bundle arguments = new Bundle();
-                    arguments.putInt("course_id", course.getId());
-                    arguments.putInt("first_sub_course_id", course.getFirstSubCourseId());
-                    arguments.putInt("second_sub_course_id", course.getSecondSubCourseId());
-                    StudentListFragment newStudentListFragment = new StudentListFragment();
-                    newStudentListFragment.setArguments(arguments);
-                    // Replace the current StudentListFragment with a new one
-                    activity.getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.student_list, newStudentListFragment).commit();
-                    updateLastSelectCourse(activity, view);
-                }
-            });
         }
     }
 
     private void updateLastSelectCourse(Activity activity, View view) {
-        markCourseAsSelected(activity, view);
-        // Reset the background color of the last selected course
-        lastSelectedCourse.setBackgroundColor(Color.TRANSPARENT);
-        // Update the last selected course variable
-        lastSelectedCourse = view;
+        if (view != lastSelectedCourse) {
+            markCourseAsSelected(activity, view);
+            // Reset the background color of the last selected course
+            lastSelectedCourse.setBackgroundColor(Color.TRANSPARENT);
+            // Update the last selected course variable
+            lastSelectedCourse = view;
+        }
     }
 
     private void markCourseAsSelected(Activity activity, View view) {
@@ -97,10 +80,10 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
     @Override
     public int getItemCount() {
         // Returns zero if there's no courses on the list
-        if (coursesList == null) {
+        if (courseList == null) {
             return 0;
         }
-        return coursesList.size();
+        return courseList.size();
     }
 
     class CourseViewHolder extends RecyclerView.ViewHolder {
@@ -109,6 +92,21 @@ public class CourseAdapter extends RecyclerView.Adapter<CourseAdapter.CourseView
         private CourseViewHolder(View itemView) {
             super(itemView);
             this.courseNameView = itemView.findViewById(R.id.course_list_name);
+            courseNameView.setOnClickListener(getCourseRecyclerViewClickListener());
+        }
+
+        private View.OnClickListener getCourseRecyclerViewClickListener() {
+            return new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final Activity activity = activityReference.get();
+                    Course course = courseList.get(getAdapterPosition());
+                    final CourseOnClickListener courseOnClickListener = new CourseOnClickListener(
+                            activity, course);
+                    courseOnClickListener.onClick(view);
+                    updateLastSelectCourse(activity, view);
+                }
+            };
         }
     }
 }

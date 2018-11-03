@@ -12,7 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import cesatec.cesatec.ApiConstants;
+import cesatec.cesatec.constants.ApiConstants;
 import cesatec.cesatec.models.Authorization;
 import cesatec.cesatec.models.Enrollment;
 import cesatec.cesatec.models.Student;
@@ -56,9 +56,14 @@ public class EnrollmentDeserializer implements JsonDeserializer<Enrollment> {
         final Student student = jsonToStudent(studentJSON);
 
         // Deserialize the student authorizations into an Authorization object array
-        final String authorizationJSON = jsonObject.get(
-                ApiConstants.EnrollmentResource.NESTED_AUTHORIZATIONS).toString();
-        final ArrayList<Authorization> authorizations = jsonToAuthorizations(authorizationJSON);
+        final JsonElement authorizationsField = jsonObject.get(
+                ApiConstants.EnrollmentResource.NESTED_AUTHORIZATIONS);
+        ArrayList<Authorization> authorizations;
+        if (authorizationsField != null && !authorizationsField.isJsonNull()) {
+            authorizations = jsonToAuthorizations(authorizationsField.toString());
+        } else {
+            authorizations = null;
+        }
 
         // Returns a new Enrollment object based on the JSON data
         return new Enrollment(id, group, subCourseName, student, authorizations);

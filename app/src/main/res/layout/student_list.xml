@@ -1,43 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:baselineAligned="false"
+    android:divider="?android:attr/dividerHorizontal"
+    android:orientation="vertical"
+    android:showDividers="middle">
 
-    <TextView
-        android:id="@+id/api_status_fetch_students"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignStart="@+id/student_list"
-        android:layout_alignLeft="@+id/student_list"
-        android:layout_alignTop="@+id/student_list"
-        android:layout_alignEnd="@+id/student_list"
-        android:layout_alignRight="@+id/student_list"
-        android:layout_alignBottom="@+id/student_list"
-        android:layout_gravity="center"
-        android:layout_marginLeft="50dp"
-        android:layout_marginTop="100dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginBottom="100dp"
-        android:gravity="center"
-        android:textIsSelectable="false"
-        android:textSize="24sp"
-        android:visibility="visible" />
-
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/student_list"
-        android:name="com.example.test.rest.StudentsListFragment"
+    <RelativeLayout
+        android:id="@+id/course_list_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginRight="16dp"
-        android:visibility="invisible"
-        app:layoutManager="android.support.v7.widget.GridLayoutManager"
-        tools:context="cesatec.cesatec.activities.mainActivity.StudentsListActivity"
-        tools:listitem="@layout/student_list_content" />
+        android:layout_height="50dp">
 
-</RelativeLayout>
+        <Spinner
+            android:id="@+id/course_list_spinner"
+            style="@style/Widget.AppCompat.DropDownItem.Spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="0dp"
+            android:dropDownWidth="match_parent"
+            android:padding="0dp"
+            android:spinnerMode="dropdown" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/student_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/api_status_fetch_students"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="50dp"
+            android:gravity="center"
+            android:textSize="24sp"
+            android:visibility="visible" />
+
+        <FrameLayout
+            android:id="@+id/sub_courses_fragment"
+            android:name="cesatec.cesatec.fragments.StudentListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+        <FrameLayout
+            android:id="@+id/students_left_fragment"
+            android:name="cesatec.cesatec.fragments.StudentLeftFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+    </RelativeLayout>
+
+</LinearLayout>

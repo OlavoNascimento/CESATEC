@@ -7,10 +7,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
 
-import cesatec.cesatec.ApiConstants;
+import cesatec.cesatec.constants.ApiConstants;
 import cesatec.cesatec.models.Authorization;
 
 /**
@@ -51,14 +49,12 @@ public class AuthorizationDeserializer implements JsonDeserializer<Authorization
         // Day of the week when the authorization is valid
         final JsonElement weekdayElement = jsonObject.get(
                 ApiConstants.AuthorizationsResource.FIELD_WEEKDAY);
-        String weekday;
+        int weekday;
         if (weekdayElement.isJsonNull()) {
-            weekday = null;
+            weekday = -1;
         } else {
             // Integer representing a day of the week
-            final int weekdayNumber = weekdayElement.getAsInt();
-            // Get the weekday name by using it's integer representation
-            weekday = new SimpleDateFormat("E", Locale.US).format(weekdayNumber);
+            weekday = weekdayElement.getAsInt();
         }
 
         // Responsible that created the authorization

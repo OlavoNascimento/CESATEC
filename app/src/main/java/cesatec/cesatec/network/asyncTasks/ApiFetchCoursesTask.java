@@ -16,8 +16,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import cesatec.cesatec.ApiConstants;
 import cesatec.cesatec.R;
+import cesatec.cesatec.constants.ApiConstants;
 import cesatec.cesatec.deserializers.CourseDeserializer;
 import cesatec.cesatec.fragments.CourseListFragment;
 import cesatec.cesatec.models.Course;
@@ -29,11 +29,15 @@ public class ApiFetchCoursesTask extends
 
     private WeakReference<Activity> activityReference;
     private WeakReference<CourseListFragment> fragmentReference;
+    private boolean twoPane;
     private URL apiUrl;
 
-    public ApiFetchCoursesTask(Activity activity, CourseListFragment fragment) {
+    public ApiFetchCoursesTask(Activity activity,
+                               CourseListFragment fragment,
+                               boolean twoPane) {
         this.activityReference = new WeakReference<>(activity);
         this.fragmentReference = new WeakReference<>(fragment);
+        this.twoPane = twoPane;
         this.apiUrl = getApiUrl();
     }
 
@@ -52,12 +56,15 @@ public class ApiFetchCoursesTask extends
 
     @Override
     protected void onPreExecute() {
-        Activity activity = activityReference.get();
-        if (activity != null) {
-            TextView apiStatusFetchCourses = activity.findViewById(
-                    R.id.api_status_fetch_courses);
-            apiStatusFetchCourses.setText(R.string.api_fetching_courses);
+        if (twoPane) {
+            Activity activity = activityReference.get();
+            if (activity != null) {
+                TextView apiStatusFetchCourses = activity.findViewById(
+                        R.id.api_status_fetch_courses);
+                apiStatusFetchCourses.setText(R.string.api_fetching_courses);
+            }
         }
+
     }
 
     @Override
@@ -82,17 +89,19 @@ public class ApiFetchCoursesTask extends
     protected void onPostExecute(ArrayList<Course> apiCoursesList) {
         Activity activity = activityReference.get();
         if (activity != null) {
-            // Hide the courses list loading message
-            TextView apiStatusFetchCourses = activity.findViewById(R.id.api_status_fetch_courses);
-            apiStatusFetchCourses.clearComposingText();
-            apiStatusFetchCourses.setVisibility(View.GONE);
+            if (twoPane) {
+                // Hide the courses list loading message
+                TextView apiStatusFetchCourses = activity.findViewById(R.id.api_status_fetch_courses);
+                apiStatusFetchCourses.clearComposingText();
+                apiStatusFetchCourses.setVisibility(View.GONE);
+            }
 
             // Get the fragment reference so it's methods can be called
             CourseListFragment courseListFragment = fragmentReference.get();
             // Save the array list retrieved from the API to the fragment
             courseListFragment.setCourseList(apiCoursesList);
             // Set the array list to the fragment RecyclerView
-            courseListFragment.setUpRecyclerView(activity);
+            courseListFragment.setUpCourseListToView(activity);
         }
     }
 }

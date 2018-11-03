@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,11 +19,11 @@
             android:id="@+id/api_status_fetch_courses"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignStart="@+id/course_list"
-            android:layout_alignLeft="@+id/course_list"
-            android:layout_alignEnd="@+id/course_list"
-            android:layout_alignRight="@+id/course_list"
-            android:layout_alignBottom="@+id/course_list"
+            android:layout_alignStart="@+id/course_list_recycler_view"
+            android:layout_alignLeft="@+id/course_list_recycler_view"
+            android:layout_alignEnd="@+id/course_list_recycler_view"
+            android:layout_alignRight="@+id/course_list_recycler_view"
+            android:layout_alignBottom="@+id/course_list_recycler_view"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="50dp"
             android:layout_marginTop="200dp"
@@ -35,106 +34,50 @@
             android:textSize="24sp"
             android:visibility="visible" />
 
-
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/course_list"
+            android:id="@+id/course_list_recycler_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="0dp"
             android:layout_marginTop="0dp"
-            android:layout_marginRight="0dp" />
+            android:layout_marginRight="0dp">
+
+        </android.support.v7.widget.RecyclerView>
 
     </RelativeLayout>
 
     <RelativeLayout
+        android:id="@+id/student_list_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <TextView
             android:id="@+id/api_status_fetch_students"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_alignStart="@+id/sub_courses_list_container"
-            android:layout_alignLeft="@+id/sub_courses_list_container"
-            android:layout_alignTop="@+id/sub_courses_list_container"
-            android:layout_alignBottom="@+id/sub_courses_list_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
-            android:layout_marginStart="0dp"
-            android:layout_marginLeft="0dp"
-            android:layout_marginTop="200dp"
-            android:layout_marginEnd="0dp"
-            android:layout_marginRight="0dp"
-            android:layout_marginBottom="200dp"
+            android:layout_alignParentBottom="true"
+            android:layout_margin="200dp"
             android:gravity="center"
             android:textSize="24sp"
             android:visibility="visible" />
 
-        <LinearLayout
-            android:id="@+id/sub_courses_list_container"
+        <FrameLayout
+            android:id="@+id/sub_courses_fragment"
+            android:name="cesatec.cesatec.fragments.StudentListFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent" />
 
-            <LinearLayout
-                android:id="@+id/first_sub_course_container"
-                android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/first_sub_course_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textIsSelectable="false"
-                    android:textSize="24sp"
-                    android:visibility="visible" />
-
-                <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    xmlns:tools="http://schemas.android.com/tools"
-                    android:id="@+id/first_sub_course_student_list"
-                    android:name="com.example.test.rest.StudentsListFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:visibility="invisible"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                    tools:context="cesatec.cesatec.activities.mainActivity.StudentsListActivity"
-                    tools:listitem="@layout/student_list_content" />
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/second_sub_course_container"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/second_sub_course_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center"
-                    android:textIsSelectable="false"
-                    android:textSize="24sp"
-                    android:visibility="visible" />
-
-                <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-                    xmlns:app="http://schemas.android.com/apk/res-auto"
-                    xmlns:tools="http://schemas.android.com/tools"
-                    android:id="@+id/second_sub_course_student_list"
-                    android:name="com.example.test.rest.StudentsListFragment"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="invisible"
-                    app:layoutManager="android.support.v7.widget.GridLayoutManager"
-                    tools:context="cesatec.cesatec.activities.mainActivity.StudentsListActivity"
-                    tools:listitem="@layout/student_list_content" />
-            </LinearLayout>
-
-        </LinearLayout>
+        <FrameLayout
+            android:id="@+id/students_left_fragment"
+            android:name="cesatec.cesatec.fragments.StudentLeftFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
 
     </RelativeLayout>
 

@@ -20,8 +20,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import cesatec.cesatec.ApiConstants;
-import cesatec.cesatec.fragments.StudentListFragment;
+import cesatec.cesatec.constants.ApiConstants;
+import cesatec.cesatec.fragments.EnrollmentFragment;
 import cesatec.cesatec.models.Enrollment;
 
 /**
@@ -31,18 +31,21 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
     private static final String TAG = "ApiCreateRegistryTask";
 
     private WeakReference<Context> contextReference;
-    private WeakReference<StudentListFragment> fragmentReference;
+    private WeakReference<EnrollmentFragment> fragmentReference;
     private AtomicInteger workingThreads;
+    private int registerType;
     private Enrollment enrollment;
     private URL api_url;
 
     public ApiCreateRegistryTask(Context context,
-                                 StudentListFragment fragment,
+                                 EnrollmentFragment fragment,
                                  AtomicInteger workingThreads,
+                                 int registerType,
                                  Enrollment enrollment) {
         this.contextReference = new WeakReference<>(context);
         this.fragmentReference = new WeakReference<>(fragment);
         this.workingThreads = workingThreads;
+        this.registerType = registerType;
         this.enrollment = enrollment;
         this.api_url = getApiUrl();
     }
@@ -81,7 +84,7 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
         int remainingThreads = workingThreads.decrementAndGet();
         Log.d(TAG, "onPostExecute: " + remainingThreads);
         if (creationStatus) {
-            StudentListFragment fragment = fragmentReference.get();
+            EnrollmentFragment fragment = fragmentReference.get();
             fragment.addToSuccessfulCreatedRegistries();
         }
         Context context = contextReference.get();
@@ -147,7 +150,6 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
      */
     private String enrollmentToParameters(Enrollment enrollment)
             throws UnsupportedEncodingException {
-        // TODO Add return registry
         // Encode the string values and concatenate them
         // into a url containing the registry data
         return URLEncoder.encode(
@@ -156,7 +158,7 @@ public class ApiCreateRegistryTask extends AsyncTask<Void, Void, Boolean> {
 
                 "&" + URLEncoder.encode(
                 ApiConstants.RegistriesResource.FIELD_TYPE_ID, "UTF-8") +
-                "=" + ApiConstants.RegistryTypesResource.FIELD_TYPE_EXIT_ID +
+                "=" + registerType +
 
                 "&" + URLEncoder.encode(
                 ApiConstants.RegistriesResource.FIELD_DATE_TIME, "UTF-8") +

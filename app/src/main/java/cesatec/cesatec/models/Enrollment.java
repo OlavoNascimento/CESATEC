@@ -2,12 +2,18 @@ package cesatec.cesatec.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import org.threeten.bp.LocalDate;
+import org.threeten.bp.LocalTime;
+import org.threeten.bp.ZoneId;
+import org.threeten.bp.format.DateTimeFormatter;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class Enrollment implements Parcelable {
-    private static final String TAG = "Enrollment";
-
     public static final Creator<Enrollment> CREATOR = new Creator<Enrollment>() {
         /**
          * Instantiate a Enrollment from a parcelable
@@ -29,12 +35,13 @@ public class Enrollment implements Parcelable {
             return new Enrollment[size];
         }
     };
-
+    private static final String TAG = "Enrollment";
     private final int id;
     private final String group;
     private final String subCourseName;
     private final Student student;
     private final ArrayList<Authorization> authorizations;
+    private boolean allowedToLeave;
 
     private boolean isSelected;
 
@@ -43,7 +50,7 @@ public class Enrollment implements Parcelable {
      *
      * @param id             Id of the enrollment
      * @param group          Group to which the enrollment belongs
-     * @param subCourseName      Sub course of the student
+     * @param subCourseName  Sub course of the student
      * @param student        Student associated with the enrollment
      * @param authorizations All authorizations related to the enrollment
      */
@@ -55,6 +62,7 @@ public class Enrollment implements Parcelable {
         this.student = student;
         this.authorizations = authorizations;
         this.isSelected = false;
+        this.allowedToLeave = checkAuthorizationList();
     }
 
     /**
@@ -75,6 +83,83 @@ public class Enrollment implements Parcelable {
         this.authorizations = authorizations;
 
         this.isSelected = in.readInt() == 1;
+        this.allowedToLeave = in.readInt() == 1;
+    }
+
+    private boolean checkAuthorizationList() {
+        ZoneId zoneId = ZoneId.systemDefault();
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(
+                "yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern(
+                "HH:mm:ss");
+
+        LocalTime timeNow = LocalTime.now(zoneId);
+        LocalDate dateNow = LocalDate.now(zoneId);
+
+        int weekDayNow = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        if (authorizations != null) {
+            for (Authorization authorization : authorizations) {
+
+                Integer authorizationWeekDay = authorization.getWeekday();
+
+                LocalDate authorizationDateStart = LocalDate.parse(
+                        authorization.getAuthorizationDateStart(), dateFormatter);
+
+                LocalDate authorizationDateEnd = LocalDate.parse(
+                        authorization.getAuthorizationDateEnd(), dateFormatter);
+
+
+                LocalTime authorizationTimeStart = LocalTime.parse(
+                        authorization.getTimeStart(), timeFormatter);
+
+                LocalTime authorizationTimeEnd;
+                if (authorization.getTimeEnd() != null) {
+                    authorizationTimeEnd = LocalTime.parse(
+                            authorization.getTimeEnd(), timeFormatter);
+                } else {
+                    authorizationTimeEnd = null;
+                }
+
+                boolean authorizationDateValid = checkAuthorizationDate(
+                        weekDayNow, dateNow, authorizationWeekDay,
+                        authorizationDateStart, authorizationDateEnd);
+
+                boolean authorizationTimeValid = checkAuthorizationTime(
+                        timeNow, authorizationTimeStart, authorizationTimeEnd);
+
+                if (authorizationDateValid && authorizationTimeValid) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean checkAuthorizationDate(int weekDayNow,
+                                           @NonNull LocalDate dateNow,
+                                           int authorizationWeekDay,
+                                           @NonNull LocalDate authorizationDateStart,
+                                           @NonNull LocalDate authorizationDateEnd) {
+        if (authorizationWeekDay > -1) {
+            if (weekDayNow != authorizationWeekDay) {
+                return false;
+            }
+        }
+        return (dateNow.isAfter(authorizationDateStart) || dateNow.equals(authorizationDateStart) &&
+                (dateNow.isBefore(authorizationDateEnd) || dateNow.equals(authorizationDateEnd)));
+    }
+
+
+    private boolean checkAuthorizationTime(@NonNull LocalTime timeNow,
+                                           @NonNull LocalTime authorizationStart,
+                                           @Nullable LocalTime authorizationEnd) {
+        if (timeNow.equals(authorizationStart) || timeNow.isAfter(authorizationStart)) {
+            if (authorizationEnd == null) {
+                return true;
+            }
+            return timeNow.equals(authorizationEnd) || timeNow.isBefore(authorizationEnd);
+        }
+        return false;
     }
 
     /**
@@ -90,6 +175,7 @@ public class Enrollment implements Parcelable {
         out.writeParcelable(student, 0);
         out.writeList(authorizations);
         out.writeInt(isSelected ? 1 : 0);
+        out.writeInt(allowedToLeave ? 1 : 0);
     }
 
     @Override
@@ -113,16 +199,16 @@ public class Enrollment implements Parcelable {
         return student;
     }
 
-    public ArrayList<Authorization> getAuthorizations() {
-        return authorizations;
-    }
-
     public boolean isSelected() {
         return isSelected;
     }
 
     public void setSelected(boolean selected) {
         isSelected = selected;
+    }
+
+    public boolean isAllowedToLeave() {
+        return allowedToLeave;
     }
 
     @Override
@@ -133,7 +219,21 @@ public class Enrollment implements Parcelable {
                 ", subCourseName='" + subCourseName + '\'' +
                 ", student=" + student +
                 ", authorizations=" + authorizations +
+                ", allowedToLeave=" + allowedToLeave +
                 ", isSelected=" + isSelected +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Enrollment that = (Enrollment) o;
+        return id == that.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id;
     }
 }

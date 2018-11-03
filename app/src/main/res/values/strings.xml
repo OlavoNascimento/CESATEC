@@ -3,8 +3,12 @@
 
     <string name="global_course">Todos os alunos</string>
 
-    <string name="api_fetching_sub_course">Buscando dados de alunos&#8230;</string>
+    <string name="api_fetching_enrollments">Buscando dados de alunos&#8230;</string>
     <string name="api_fetching_courses">Buscando dados de cursos&#8230;</string>
+
+    <string name="first_sub_course">Turma A</string>
+    <string name="second_sub_course">Turma B</string>
+    <string name="single_list_header">Alunos que %1$s hoje</string>
 
     <string name="api_failed_connecting">Falha ao acessar o servidor! Cheque a conexão</string>
 

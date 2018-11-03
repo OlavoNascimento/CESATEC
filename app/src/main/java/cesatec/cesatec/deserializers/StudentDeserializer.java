@@ -8,7 +8,7 @@ import com.google.gson.JsonParseException;
 
 import java.lang.reflect.Type;
 
-import cesatec.cesatec.ApiConstants;
+import cesatec.cesatec.constants.ApiConstants;
 import cesatec.cesatec.models.Student;
 
 /**

@@ -1,4 +1,4 @@
-package cesatec.cesatec;
+package cesatec.cesatec.constants;
 
 public final class ApiConstants {
     /**
@@ -12,10 +12,20 @@ public final class ApiConstants {
      */
     public final class RegistryTypesResource {
         // Value fields
-        // Id that represents the type of an exit registry
-        // Used by ApiCreateRegistryTask
-        // TODO Auto set using API value
-        public static final int FIELD_TYPE_EXIT_ID = 2;
+        public static final String FIELD_ID = "id";
+        public static final String FIELD_DESCRIPTION = "descricao";
+        // Register types names
+        public static final String TYPE_EXIT_NAME = "saída";
+        public static final String TYPE_RETURN_NAME = "entrada";
+        // Resource name
+        // Used by ApiGetRegistriesTypes
+        private static final String RESOURCE_NAME = "tipos_registro";
+        // Endpoint
+        // Used by ApiGetRegistriesTypes
+        public static final String API_ENDPOINT = API_URL + RESOURCE_NAME;
+
+
+
     }
 
     /**
@@ -26,16 +36,12 @@ public final class ApiConstants {
         // Value fields
         public static final String FIELD_ID = "id";
         public static final String FIELD_STUDENT_GROUP = "grupo";
+        public static final String FIELD_STUDENT_SUB_COURSE = "turma";
         // Nested resources
         public static final String NESTED_STUDENT = "aluno";
-        public static final String NESTED_SUB_COURSE = "turma";
         public static final String NESTED_AUTHORIZATIONS = "autorizacoes";
         // Default value for the student group JSON field
         public static final String DEFAULT_STUDENT_GROUP = "A";
-        // Resource name
-        private static final String RESOURCE_NAME = "matriculas";
-        // Endpoint
-        public static final String API_ENDPOINT = API_URL + RESOURCE_NAME;
     }
 
     /**
@@ -112,6 +118,8 @@ public final class ApiConstants {
         public static final String FIELD_ENROLLMENT_ID = "matricula_id";
         public static final String FIELD_TYPE_ID = "tipo_registro_id";
         public static final String FIELD_DATE_TIME = "data_hora";
+        // Nested resource
+        public static final String NESTED_ENROLLMENT = "matricula";
         // Resource name
         private static final String RESOURCE_NAME = "registros";
         // Endpoint

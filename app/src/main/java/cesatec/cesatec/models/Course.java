@@ -90,9 +90,6 @@ public class Course implements Parcelable {
 
     @Override
     public String toString() {
-        return "Course{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
+        return name;
     }
 }

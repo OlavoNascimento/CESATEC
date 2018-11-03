@@ -12,7 +12,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import cesatec.cesatec.ApiConstants;
+import cesatec.cesatec.constants.ApiConstants;
 import cesatec.cesatec.models.Authorization;
 import cesatec.cesatec.models.Enrollment;
 import cesatec.cesatec.models.SubCourse;

@@ -28,17 +28,17 @@ public class Authorization implements Parcelable {
         }
     };
 
-    private String authorizationStart;
-    private String authorizationEnd;
+    private String authorizationDateStart;
+    private String authorizationDateEnd;
     private String timeStart;
     private String timeEnd;
-    private String weekday;
+    private Integer weekday;
     private String responsible;
 
-    public Authorization(String authorizationStart, String authorizationEnd, String timeStart,
-                         String timeEnd, String weekday, String responsible) {
-        this.authorizationStart = authorizationStart;
-        this.authorizationEnd = authorizationEnd;
+    public Authorization(String authorizationDateStart, String authorizationDateEnd, String timeStart,
+                         String timeEnd, Integer weekday, String responsible) {
+        this.authorizationDateStart = authorizationDateStart;
+        this.authorizationDateEnd = authorizationDateEnd;
         this.timeStart = timeStart;
         this.timeEnd = timeEnd;
         this.weekday = weekday;
@@ -53,11 +53,11 @@ public class Authorization implements Parcelable {
      *           object information
      */
     private Authorization(Parcel in) {
-        this.authorizationStart = in.readString();
-        this.authorizationEnd = in.readString();
+        this.authorizationDateStart = in.readString();
+        this.authorizationDateEnd = in.readString();
         this.timeStart = in.readString();
         this.timeEnd = in.readString();
-        this.weekday = in.readString();
+        this.weekday = in.readInt();
         this.responsible = in.readString();
     }
 
@@ -68,11 +68,11 @@ public class Authorization implements Parcelable {
      */
     @Override
     public void writeToParcel(Parcel out, int flags) {
-        out.writeString(authorizationStart);
-        out.writeString(authorizationEnd);
+        out.writeString(authorizationDateStart);
+        out.writeString(authorizationDateEnd);
         out.writeString(timeStart);
         out.writeString(timeEnd);
-        out.writeString(weekday);
+        out.writeInt(weekday);
         out.writeString(responsible);
     }
 
@@ -81,23 +81,23 @@ public class Authorization implements Parcelable {
         return 0;
     }
 
-    public String getAuthorizationStart() {
-        return authorizationStart;
+    public String getAuthorizationDateStart() {
+        return authorizationDateStart;
     }
 
-    public String getAuthorizationEnd() {
-        return authorizationEnd;
+    public String getAuthorizationDateEnd() {
+        return authorizationDateEnd;
     }
 
-    public String getTimeStart() {
+    String getTimeStart() {
         return timeStart;
     }
 
-    public String getTimeEnd() {
+    String getTimeEnd() {
         return timeEnd;
     }
 
-    public String getWeekday() {
+    Integer getWeekday() {
         return weekday;
     }
 
@@ -108,8 +108,8 @@ public class Authorization implements Parcelable {
     @Override
     public String toString() {
         return "Authorization{" +
-                "authorizationStart='" + authorizationStart + '\'' +
-                ", authorizationEnd='" + authorizationEnd + '\'' +
+                "authorizationDateStart='" + authorizationDateStart + '\'' +
+                ", authorizationDateEnd='" + authorizationDateEnd + '\'' +
                 ", timeStart='" + timeStart + '\'' +
                 ", timeEnd='" + timeEnd + '\'' +
                 ", weekday='" + weekday + '\'' +

@@ -2,7 +2,6 @@ package cesatec.cesatec.adapters;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
@@ -18,7 +17,7 @@ import java.util.ArrayList;
 
 import cesatec.cesatec.R;
 import cesatec.cesatec.activities.detailActivity.StudentDetailActivity;
-import cesatec.cesatec.fragments.StudentListFragment;
+import cesatec.cesatec.fragments.EnrollmentFragment;
 import cesatec.cesatec.models.Enrollment;
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -31,12 +30,11 @@ public class EnrollmentAdapter extends
     private static final String TAG = "EnrollmentAdapter";
 
     private WeakReference<Activity> activityReference;
-    private WeakReference<StudentListFragment> fragmentReference;
+    private WeakReference<EnrollmentFragment> fragmentReference;
     private ArrayList<Enrollment> enrollmentsList;
 
-    // TODO Replace activity with context
     public EnrollmentAdapter(Activity activity,
-                             StudentListFragment fragment,
+                             EnrollmentFragment fragment,
                              ArrayList<Enrollment> enrollmentsList) {
         this.activityReference = new WeakReference<>(activity);
         this.fragmentReference = new WeakReference<>(fragment);
@@ -66,56 +64,65 @@ public class EnrollmentAdapter extends
      */
     @Override
     public void onBindViewHolder(@NonNull EnrollmentViewHolder viewHolder, int position) {
-        final Activity activity = activityReference.get();
-        if (activity != null) {
-            final Enrollment enrollment = enrollmentsList.get(position);
+        final Enrollment enrollment = enrollmentsList.get(position);
 
-            // Set student name on list
-            TextView studentNameView = viewHolder.studentNameView;
-            // Replace each space in the student name with a line break
-            String studentNameSurname = enrollment.getStudent().getName().replace(
-                    " ", "\n");
-            studentNameView.setText(studentNameSurname);
+        // Set student name on list
+        TextView studentNameView = viewHolder.studentNameView;
+        // Replace each space in the student name with a line break
+        String studentNameSurname = enrollment.getStudent().getName().replace(
+                " ", "\n");
+        studentNameView.setText(studentNameSurname);
 
-            // Set the student image if there is one
-            viewHolder.setStudentImage(enrollment.getStudent().getAvatarUrl());
+        // Set the student image if there is one
+        viewHolder.setStudentImage(enrollment.getStudent().getAvatarUrl());
 
-            CircleImageView studentAvatarView = viewHolder.studentAvatarView;
-            // Check if the enrollment was already selected, avoiding
-            // changing colors of different enrollments
-            if (enrollment.isSelected()) {
-                setViewBorderSelected(studentAvatarView);
-            } else {
-                setViewBorderUnselected(studentAvatarView);
-            }
+        CircleImageView studentAvatarView = viewHolder.studentAvatarView;
+        // Check if the enrollment is allowed to leave
+        // and if it was already selected
+        setEnrollmentStatus(studentAvatarView, enrollment);
+    }
+
+    private void setEnrollmentStatus(CircleImageView imageView, Enrollment enrollment) {
+        boolean enrollmentAllowedToLeave = enrollment.isAllowedToLeave();
+        boolean enrollmentIsSelected = enrollment.isSelected();
+        if (enrollmentIsSelected) {
+            setViewBorderSelected(imageView);
+        } else if (enrollmentAllowedToLeave) {
+            setViewBorderAllowedToLeave(imageView);
+        } else {
+            setViewBorderNotAllowedToLeave(imageView);
         }
     }
 
-    private void setEnrollmentSelected(CircleImageView circleImageView,
-                                       StudentListFragment fragment,
-                                       Enrollment enrollment) {
-        enrollment.setSelected(true);
-        fragment.addToUpdateStatus(enrollment);
+    private void setViewBorderAllowedToLeave(CircleImageView circleImageView) {
+        circleImageView.setBorderColor(
+                ContextCompat.getColor(circleImageView.getContext(), R.color.allowedImageBorder));
+    }
 
-        setViewBorderSelected(circleImageView);
+    private void setViewBorderNotAllowedToLeave(CircleImageView circleImageView) {
+        circleImageView.setBorderColor(
+                ContextCompat.getColor(circleImageView.getContext(), R.color.notAllowedImageBorder));
     }
 
     private void setViewBorderSelected(CircleImageView circleImageView) {
         circleImageView.setBorderColor(
-                ContextCompat.getColor(circleImageView.getContext(), R.color.pendingImageBorder));
+                ContextCompat.getColor(circleImageView.getContext(), R.color.selectedImageBorder));
     }
 
-    private void setEnrollmentUnselected(CircleImageView circleImageView,
-                                         StudentListFragment fragment,
+    private void setEnrollmentSelected(CircleImageView circleImageView,
+                                       EnrollmentFragment fragment,
+                                       Enrollment enrollment) {
+        enrollment.setSelected(true);
+        fragment.addToUpdateStatus(enrollment);
+        setViewBorderSelected(circleImageView);
+    }
+
+    private void setEnrollmentUnselected(CircleImageView imageView,
+                                         EnrollmentFragment fragment,
                                          Enrollment enrollment) {
         enrollment.setSelected(false);
         fragment.removeFromUpdateStatus(enrollment);
-
-        setViewBorderUnselected(circleImageView);
-    }
-
-    private void setViewBorderUnselected(CircleImageView circleImageView) {
-        circleImageView.setBorderColor(Color.BLACK);
+        setEnrollmentStatus(imageView, enrollment);
     }
 
     /**
@@ -165,7 +172,7 @@ public class EnrollmentAdapter extends
             @Override
             public boolean onLongClick(View view) {
                 // Parent fragment that contains the RecyclerView
-                StudentListFragment fragment = fragmentReference.get();
+                EnrollmentFragment fragment = fragmentReference.get();
                 if (fragment != null) {
                     // Get the selected enrollment from the enrollment list
                     Enrollment enrollment = enrollmentsList.get(getAdapterPosition());
@@ -194,8 +201,6 @@ public class EnrollmentAdapter extends
 
         private void setStudentImage(String avatarUrl) {
             // Set student image on list
-            // TODO Image border color based on authorization status
-            // Get the student avatar url
             if (avatarUrl != null) {
                 Picasso.get()
                         .load(avatarUrl)
