@@ -70,15 +70,18 @@ public class ApiGetRegistryTypesTask extends
     @Override
     protected void onPostExecute(HashMap<String, Integer> registryTypes) {
         StudentListActivity activity = activityReference.get();
-        if (activity != null) {
+        if (activity != null && registryTypes != null) {
             String typeExitName = normalizeString(
                     ApiConstants.RegistryTypesResource.TYPE_EXIT_NAME);
             String typeReturnName = normalizeString(
                     ApiConstants.RegistryTypesResource.TYPE_RETURN_NAME);
 
-            activity.setRegistryTypes(new RegistryTypes(
-                    registryTypes.get(typeExitName),
-                    registryTypes.get(typeReturnName)));
+            Integer exitId = registryTypes.get(typeExitName);
+            Integer returnId = registryTypes.get(typeReturnName);
+            if (exitId != null && returnId != null) {
+                activity.setRegistryTypes(
+                        new RegistryTypes(exitId, returnId));
+            }
         }
     }
 

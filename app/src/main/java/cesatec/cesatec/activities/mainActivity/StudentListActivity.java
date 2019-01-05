@@ -20,7 +20,7 @@ import cesatec.cesatec.network.asyncTasks.ApiGetRegistryTypesTask;
 public class StudentListActivity extends AppCompatActivity {
     private static final String TAG = "StudentListActivity";
 
-    private RegistryTypes registryTypes = null;
+    private RegistryTypes registryTypes;
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {

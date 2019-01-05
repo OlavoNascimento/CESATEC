@@ -35,7 +35,7 @@ public class EnrollmentFragment extends Fragment {
 
     protected FloatingActionButton createStudentRegistryButton;
 
-    private ArrayList<Enrollment> enrollmentsUpdateStatus = new ArrayList<>();
+    protected ArrayList<Enrollment> enrollmentsUpdateStatus = new ArrayList<>();
     private int enrollmentsUpdateStatusSize;
     private int successfulCreatedRegistries = 0;
 
@@ -63,6 +63,7 @@ public class EnrollmentFragment extends Fragment {
         if (activity != null) {
             this.createStudentRegistryButton = activity.findViewById(
                     R.id.create_student_registry_button);
+            createStudentRegistryButton.show();
 
             LocalBroadcastManager.getInstance(activity).registerReceiver(registriesCreatedReceiver,
                     new IntentFilter("all_registries_tasks_finished"));
@@ -77,8 +78,11 @@ public class EnrollmentFragment extends Fragment {
      * @param view View used to create the snack bar
      *             that display the status of the operation
      */
-    protected void sendEnrollmentsStatus(final View view, Activity activity, int registryTypeId) {
+    protected ArrayList<Enrollment> sendEnrollmentsStatus(final View view,
+                                                          Activity activity,
+                                                          int registryTypeId) {
         if (activity != null) {
+            ArrayList<Enrollment> createdStudentsRegistries = new ArrayList<>();
             // Message to be displayed  on the snack bar
             if (enrollmentsUpdateStatus != null && !enrollmentsUpdateStatus.isEmpty()) {
                 // Creates a iterator so a item can be removed while iterating through the list
@@ -95,15 +99,16 @@ public class EnrollmentFragment extends Fragment {
                             remainingThreads, registryTypeId, enrollment).execute();
                     // Set the enrollment as unselected
                     enrollment.setSelected(false);
-                    // Remove the enrollment from the list
-                    iterator.remove();
+                    createdStudentsRegistries.add(enrollment);
                 }
             } else {
                 // No enrollment was selected
                 String message = getString(R.string.student_no_enrollments_sent);
                 Snackbar.make(view, message, Snackbar.LENGTH_LONG).show();
             }
+            return createdStudentsRegistries;
         }
+        return null;
     }
 
     /**
@@ -114,11 +119,15 @@ public class EnrollmentFragment extends Fragment {
                                   RecyclerView recyclerView,
                                   ArrayList<Enrollment> enrollments) {
         // Array list containing the enrollments of the selected course
-        if (enrollments != null) {
+        if (recyclerView != null && enrollments != null) {
             // Set the recycler view adapter
             EnrollmentAdapter enrollmentAdapter = new EnrollmentAdapter(activity,
                     this, enrollments);
             recyclerView.setAdapter(enrollmentAdapter);
+
+            if (activity.findViewById(R.id.course_list_recycler_view) == null) {
+                recyclerView.setNestedScrollingEnabled(false);
+            }
 
             // Set the visibility of the recycler view that will display the list
             recyclerView.setVisibility(View.VISIBLE);

@@ -32,7 +32,7 @@ import cesatec.cesatec.network.utils.WebUtilities;
 
 public class ApiCheckRegistriesForStudentsTask extends
         AsyncTask<Void, ArrayList<Enrollment>, ArrayList<Enrollment>> {
-    private static final String TAG = "ApiCheckStudentsThatLef";
+    private static final String TAG = "ApiCheckRegistriesTask";
 
     private WeakReference<Activity> activityReference;
     private WeakReference<EnrollmentFragment> fragmentReference;
@@ -90,13 +90,17 @@ public class ApiCheckRegistriesForStudentsTask extends
                         ApiConstants.RegistriesResource.FIELD_TYPE_ID).getAsInt();
 
                 if (checkRegistryDate(dateNow, registryObject)) {
+                    JsonObject enrollmentJson = registryObject.get(
+                            ApiConstants.RegistriesResource.NESTED_ENROLLMENT)
+                            .getAsJsonObject();
+                    Enrollment enrollment = jsonToEnrollment(enrollmentJson);
                     if (registryType == searchRegistryTypeId) {
-                        JsonObject enrollmentJson = registryObject.get(
-                                ApiConstants.RegistriesResource.NESTED_ENROLLMENT).getAsJsonObject();
-                        Enrollment enrollment = jsonToEnrollment(enrollmentJson);
                         if (!studentsThatMatchSearch.contains(enrollment)) {
                             studentsThatMatchSearch.add(enrollment);
                         }
+                    }
+                    if (registryType != searchRegistryTypeId) {
+                        studentsThatMatchSearch.remove(enrollment);
                     }
                 }
 
@@ -134,7 +138,6 @@ public class ApiCheckRegistriesForStudentsTask extends
         LocalDate registryCreatedDate = LocalDate.parse(
                 registryCreatedString, dateTimeFormatter);
 
-        Log.d(TAG, "checkRegistryDate: " + dateNow.equals(registryCreatedDate));
         return dateNow.equals(registryCreatedDate);
     }
 

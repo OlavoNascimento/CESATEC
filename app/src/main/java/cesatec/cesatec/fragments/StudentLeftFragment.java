@@ -81,13 +81,22 @@ public class StudentLeftFragment extends EnrollmentFragment {
      * @param view View used to create the snack bar
      *             that display the status of the operation
      */
-    protected void sendEnrollmentsStatus(final View view, Activity activity, int registryTypeId) {
+    @Override
+    protected ArrayList<Enrollment> sendEnrollmentsStatus(final View view,
+                                                          Activity activity,
+                                                          int registryTypeId) {
         if (activity != null) {
-            super.sendEnrollmentsStatus(view, activity, registryTypeId);
+            ArrayList<Enrollment> createdRegistries = super.sendEnrollmentsStatus(
+                    view, activity, registryTypeId);
             // Update the recycler view
             RecyclerView studentsSingleList = activity.findViewById(R.id.student_single_list);
+            for (Enrollment enrollment : createdRegistries) {
+                studentsThatLeft.remove(enrollment);
+            }
             setUpRecyclerView(activity, studentsSingleList, studentsThatLeft);
+            return createdRegistries;
         }
+        return null;
     }
 
     @Override

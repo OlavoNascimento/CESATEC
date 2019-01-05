@@ -9,8 +9,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+
 import cesatec.cesatec.R;
 import cesatec.cesatec.activities.mainActivity.StudentListActivity;
+import cesatec.cesatec.models.Enrollment;
 import cesatec.cesatec.models.SubCourse;
 import cesatec.cesatec.network.asyncTasks.ApiFetchSubCourseTask;
 
@@ -121,13 +124,18 @@ public class StudentListFragment extends EnrollmentFragment {
      * @param view View used to create the snack bar
      *             that display the status of the operation
      */
-    protected void sendEnrollmentsStatus(final View view, Activity activity, int registryTypeId) {
+    protected ArrayList<Enrollment> sendEnrollmentsStatus(final View view,
+                                                          Activity activity,
+                                                          int registryTypeId) {
         if (activity != null) {
-            super.sendEnrollmentsStatus(view, activity, registryTypeId);
+            ArrayList<Enrollment> createdRegistries = super.sendEnrollmentsStatus(
+                    view, activity, registryTypeId);
             // Update the recycler view
             setUpFirstSubCourseRecyclerView(activity);
             setUpSecondSubCourseRecyclerView(activity);
+            return createdRegistries;
         }
+        return null;
     }
 
     public void setFirstSubCourse(SubCourse subCourse) {

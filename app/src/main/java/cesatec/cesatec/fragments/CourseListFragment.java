@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -27,9 +28,9 @@ public class CourseListFragment extends Fragment {
 
     public static final int studentsThatLeftFragmentId = -1;
     public static final int studentsThatReturnedFragmentId = -2;
-    protected boolean twoPane;
+    private boolean twoPane;
     private ArrayList<Course> courseList = new ArrayList<>();
-    // Recreate the student list when changing the select course
+    private boolean connectionError = false;
 
     /**
      * Store the courses ArrayList on a bundle before the fragment is destroyed
@@ -45,6 +46,7 @@ public class CourseListFragment extends Fragment {
         if (courseList != null) {
             outState.putParcelableArrayList("course_list", courseList);
         }
+        outState.putBoolean("connection_error", connectionError);
     }
 
     @Override
@@ -59,7 +61,11 @@ public class CourseListFragment extends Fragment {
                 new ApiFetchCoursesTask(activity, this, twoPane).execute();
             } else {
                 courseList = savedInstanceState.getParcelableArrayList("course_list");
-                setUpRecyclerView(activity);
+                setUpCourseListToView(activity);
+                connectionError = savedInstanceState.getBoolean("connection_error");
+            }
+            if (connectionError) {
+                displayConnectionErrorMessage(activity);
             }
         }
     }
@@ -70,9 +76,24 @@ public class CourseListFragment extends Fragment {
      * @param courseList ArrayList to be set as the courseList
      */
     public void setCourseList(ArrayList<Course> courseList) {
-        this.courseList = courseList;
-        addEnrollmentsThatLeftToList();
-        addEnrollmentsThatReturnedToList();
+        Activity activity = getActivity();
+        if (courseList != null) {
+            this.courseList = courseList;
+            addEnrollmentsThatLeftToList();
+            addEnrollmentsThatReturnedToList();
+        } else {
+            displayConnectionErrorMessage(activity);
+        }
+    }
+
+    private void displayConnectionErrorMessage(Activity activity) {
+        connectionError = true;
+        if (activity != null) {
+            TextView errorMessage = activity.findViewById(R.id.api_status_fetch_students);
+            errorMessage.setVisibility(View.VISIBLE);
+            errorMessage.setText(R.string.api_failed_connecting);
+        }
+
     }
 
     private void addEnrollmentsThatLeftToList() {
@@ -100,23 +121,26 @@ public class CourseListFragment extends Fragment {
     }
 
     private void setUpSpinner(final Activity activity) {
-        Spinner courseListSpinner = activity.findViewById(R.id.course_list_spinner);
-        ArrayAdapter<Course> adapter = new ArrayAdapter<>(
-                getContext(), android.R.layout.simple_spinner_dropdown_item, courseList);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        courseListSpinner.setAdapter(adapter);
-        courseListSpinner.setSelection(2);
-        courseListSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                new CourseOnClickListener(activity, courseList.get(position)).onClick(view);
-            }
+        if (activity != null) {
+            Spinner courseListSpinner = activity.findViewById(R.id.course_list_spinner);
+            ArrayAdapter<Course> adapter = new ArrayAdapter<>(
+                    activity, android.R.layout.simple_spinner_dropdown_item, courseList);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            courseListSpinner.setAdapter(adapter);
+            courseListSpinner.setSelection(2);
+            courseListSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                    new CourseOnClickListener(activity, courseList.get(position)).onClick(view);
+                }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
+                @Override
+                public void onNothingSelected(AdapterView<?> parent) {
 
-            }
-        });
+                }
+            });
+        }
+
     }
 
     private void createInitialStudentFragment(AppCompatActivity activity) {
@@ -137,15 +161,17 @@ public class CourseListFragment extends Fragment {
      */
     private void setUpRecyclerView(Activity activity) {
         RecyclerView rvCourses = activity.findViewById(R.id.course_list_recycler_view);
-        // Set the recycler view adapter
-        CourseAdapter courseAdapter = new CourseAdapter(activity, courseList);
-        rvCourses.setAdapter(courseAdapter);
+        if (rvCourses != null) {
+            // Set the recycler view adapter
+            CourseAdapter courseAdapter = new CourseAdapter(activity, courseList);
+            rvCourses.setAdapter(courseAdapter);
 
-        // Set the visibility of the recycler view that will display the list
-        rvCourses.setVisibility(View.VISIBLE);
+            // Set the visibility of the recycler view that will display the list
+            rvCourses.setVisibility(View.VISIBLE);
 
-        // Set the gridlayout to the maximum number of columns possible
-        rvCourses.setLayoutManager(
-                new LinearLayoutManager(getContext()));
+            // Set the gridlayout to the maximum number of columns possible
+            rvCourses.setLayoutManager(
+                    new LinearLayoutManager(getContext()));
+        }
     }
 }
